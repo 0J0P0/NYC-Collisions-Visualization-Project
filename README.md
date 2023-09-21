@@ -1,6 +1,6 @@
 # VI
 
-- [Documentation](https://docs.streamlit.io/)
+- [Streamlit documentation](https://docs.streamlit.io/)
 
 
 
