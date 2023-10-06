@@ -17,9 +17,9 @@ The visualization must be a multi-view visualization. Think carefully about the 
 
 ## 2. Data
 
-Collisions dataset: From collision dataset, Extract rows from Jun-Sep 2018 and Jun-Sep 2020.
+[Collisions dataset](https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95): From collision dataset, Extract rows from Jun-Sep 2018 and Jun-Sep 2020.
 
-Weather dataset: You will need to find it.
+[Weather dataset](https://www.ncdc.noaa.gov/cdo-web/search): You will need to find it.
 
 NY map: You will need to find it.
 
