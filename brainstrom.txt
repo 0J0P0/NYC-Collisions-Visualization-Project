@@ -1,0 +1,17 @@
+
+Are accidents more frequent during weekdays or weekends? Is there any difference between before COVID-19 and after?
+    - 
+
+Is there any type of vehicle more prone to participate in accidents?
+    - 
+
+At what time of the day are accidents more common?
+    - Radial chart with the number of accidents per hour of the day
+
+Are there any areas with a larger number of accidents?
+    - Heatmap with the number of accidents per location
+    - Map with the number of accidents per location
+
+Is there a correlation between weather conditions and accidents?
+    - Line chart with the number of accidents per weather condition
+    
