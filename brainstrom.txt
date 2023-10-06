@@ -14,4 +14,11 @@ Are there any areas with a larger number of accidents?
 
 Is there a correlation between weather conditions and accidents?
     - Line chart with the number of accidents per weather condition
-    
+
+
+--------------------------------------------------------------------------
+Preprocessing
+
+    - Si long, lat = 0, se pueden considerar como missing values
+
+    - On street and Off street no tienen filas con los dos atributos no nulos. Se pueden fusionar ya que dan la misma info

@@ -1,2 +1,1 @@
-Data/colissions.csv filter=lfs diff=lfs merge=lfs -text
-Data/colissions_2018-2020.csv filter=lfs diff=lfs merge=lfs -text
+Data/collisions.csv filter=lfs diff=lfs merge=lfs -text
