@@ -1,7 +1,6 @@
-# Information Visualization lab 
+# Information Visualization
 
-First practical work
-
+# First Proyect Statement
 ## 1. Introduction
 
 We will work with a dataset with information about collisions in New York City, we are specifically interested in the summers of 2018 and 2020. Our goal is to create a static visualization that allows us to answer the following questions:
@@ -32,7 +31,7 @@ You can process the data using either OpenRefine, or another tool. You can also 
 
 For the visualization, we need you to describe the design process also in the Google Colab document. This means that you may include all the steps that led you to the final visualization. You can remove (or group) some steps in the final document if you think it is better. But we need to see the design process, we want to understand how did you reach the final visualization. Before you start coding anything, you need to think about what visualizations will be provided. Note that the user needs to be able to answer the questions above with a single static visualization, that will include multiple views. The final visualization must be designed in altair and included as a single chart in Streamlit. Consider all sorts of charts that might be useful: line charts, bar charts, heat maps, treemaps ... Some views will contain several variables, so use visual cues, and proper palettes to ensure they are understood properly.
 
-## 5. $5 \quad$ Delivery instructions
+## 5. Delivery instructions
 
 The work can be implemented in pairs or individually. You have to provide the clean data. You have to describe the cleaning procedure so that we can generate the clean data from the raw data following your steps. This description must go in the Colab document.
 
