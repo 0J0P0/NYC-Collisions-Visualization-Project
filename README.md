@@ -44,7 +44,7 @@ The delivery must consist of a single ZIP file with a name that includes the aut
 
 The deadline for the delivery of this lab project is the 17th of November.
 
-## 6. $6 \quad$ Important remarks
+## 6. Important remarks
 
 The final grade will consider the number of variables included in the visualizations (these may include new calculated variables, such as averages, maxima, minima, etc.)(e.g., other columns from the data set...). Additionally, we will value the number of non-trivial tasks (adequately described in the documentation) that can be properly solved with your visualization tool.
 
