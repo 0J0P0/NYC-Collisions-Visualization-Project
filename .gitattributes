@@ -1,1 +1,2 @@
 Data/collisions.csv filter=lfs diff=lfs merge=lfs -text
+visualizations.ipynb filter=lfs diff=lfs merge=lfs -text
