@@ -1,2 +1,2 @@
 Data/collisions.csv filter=lfs diff=lfs merge=lfs -text
-Visualizations/visualizations.ipynb filter=lfs diff=lfs merge=lfs -text
+Visualizations/q1.ipynb filter=lfs diff=lfs merge=lfs -text
