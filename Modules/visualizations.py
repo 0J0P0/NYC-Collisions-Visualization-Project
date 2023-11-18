@@ -97,9 +97,10 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
         y=alt.Y('NORMALIZED COUNT:Q', title='Number of Collisions'),
         color=alt.Color('BOROUGH:N',
                         legend=alt.Legend(title='Borough',
-                                          labelFontSize=10,
+                                          labelFontSize=12,
                                           orient='bottom'),
-                        scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff']))
+                        scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff'])),
+        tooltip=['BOROUGH', 'CRASH TIME INTERVAL', 'COUNT']
     )
 
     return c
@@ -110,9 +111,9 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
     """
     """
 
-    file_path = "./Data/new-york-city-boroughs-ny_.geojson"
+    map_path = "./Data/new-york-city-boroughs-ny_.geojson"
 
-    nyc_map = gpd.read_file(file_path)
+    nyc_map = gpd.read_file(map_path)
     nyc_map_hex = nyc_map.h3.polyfill_resample(8)
     nyc_map_hex = nyc_map_hex.reset_index()
 
@@ -162,6 +163,19 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
 
 @st.cache_data
 def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
+    """
+    Creates a heatmap to show the number of collisions by hour of the day and day of the week.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the collisions data.
+    
+    Returns
+    -------
+    alt.Chart
+        Heatmap with the number of collisions by hour of the day and day of the week.
+    """
 
     c1 = alt.Chart(df).mark_rect(
         tooltip=True
@@ -173,11 +187,12 @@ def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
                 sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 title='Day of the Week'),
         color=alt.Color('count():Q',
-                        title='Number of Collisions',
+                        legend=alt.Legend(title='Number of Collisions',
+                                            labelFontSize=12),
                         scale=alt.Scale(range=['#f0fff1', '#5603ad'])),
-        tooltip=['count()']
+        tooltip=['DAY NAME', 'CRASH TIME INTERVAL', 'count()']
     ).properties(
-        title='Number of Collisions by Hour of the Day and Day of the Week in 2018'
+        height=300
     )
 
     return c1
@@ -185,14 +200,24 @@ def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
 
 @st.cache_data
 def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
+    """
+    Creates a slope chart to show the number of collisions by day type.
 
-    df = df.loc[:, ['YEAR', 'TYPE OF DAY']]
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the collisions data.
+    
+    Returns
+    -------
+    alt.Chart
+        Slope chart with the number of collisions by day type.
+    """
+
     df.insert(0, 'COUNT', 1)
-
     df = df.groupby(['YEAR', 'TYPE OF DAY']).count().reset_index()
     # divide count by 5 if it is a weekday
     df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['TYPE OF DAY'] == 'Weekday' else x['COUNT']/2, axis=1)
-
 
     slope = alt.Chart(df).mark_line().encode(
         x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
@@ -206,11 +231,11 @@ def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
     ).encode(
         x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('COUNT:Q', title='Collisions per Day'),
-        color=alt.Color('WEEKDAY:N',
+        color=alt.Color('TYPE OF DAY:N',
                         scale=alt.Scale(range=['#B3E9C7', '#8367C7']),
                         legend=None)
     )
-    return alt.layer(slope, pts)
+    return alt.layer(slope, pts).properties(height=300)
 
 
 @st.cache_data

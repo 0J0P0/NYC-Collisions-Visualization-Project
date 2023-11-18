@@ -48,7 +48,7 @@ def app():
         st.altair_chart(c, use_container_width=True)
 
     with col5:
-        c = plot_slope_chart(collisions)
+        c = plot_slope_chart(collisions[['YEAR', 'TYPE OF DAY']])
         st.altair_chart(c, use_container_width=True)
 
     col6, col7, col8 = st.columns(3)
