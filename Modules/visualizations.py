@@ -134,6 +134,8 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
     print(type(c1 + c2))
     return c1 + c2
 
+
+@st.cache_data
 def plot_heatmap(collisions: pd.DataFrame) -> alt.Chart:
 
     c1 = alt.Chart(collisions).mark_rect(
@@ -155,6 +157,8 @@ def plot_heatmap(collisions: pd.DataFrame) -> alt.Chart:
 
     return c1
 
+
+@st.cache_data
 def plot_slope_chart(collisions: pd.DataFrame) -> alt.Chart:
 
     df = collisions.loc[:, ['YEAR', 'DAY NAME', 'WEEKDAY']]
@@ -183,8 +187,28 @@ def plot_slope_chart(collisions: pd.DataFrame) -> alt.Chart:
     )
     return alt.layer(slope, pts)
 
-def plot_scatterplots(data: pd.DataFrame) -> alt.Chart:
-    t1 = alt.Chart(data).mark_point(
+
+@st.cache_data
+def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
+    """
+    Creates three scatterplots to compare the number of collisions with the weather conditions.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the merged data.
+    
+    Returns
+    -------
+    alt.Chart
+        Scatterplot with the mean temperature and the number of collisions.
+    alt.Chart
+        Scatterplot with the precipitation and the number of collisions.
+    alt.Chart
+        Scatterplot with the wind speed and the number of collisions.
+    """
+    
+    t1 = alt.Chart(df).mark_point(
         filled=True,
         size=100,
         opacity=0.5
@@ -192,30 +216,25 @@ def plot_scatterplots(data: pd.DataFrame) -> alt.Chart:
         x=alt.X('MEAN_TEMP:Q',
                 title='Mean Temperature',
                 scale=alt.Scale(domain=[10, 30])),
-        y=alt.Y('COLLISION COUNT:Q',
-                title='Number of Collisions'),
+        y=alt.Y('COLLISION COUNT:Q', title='Number of Collisions'),
         color=alt.Color('year(DATE):N',
-                        title='Year')
-    ).properties(
-        title='Number of Collisions by Mean Temperature'
+                        scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
+                        legend=None)
     )
 
-    t2 = alt.Chart(data).mark_point(
+    t2 = alt.Chart(df).mark_point(
         filled=True,
         size=100,
         opacity=0.5
     ).encode(
-        x=alt.X('PRCP:Q',
-                title='Precipitation'),
-        y=alt.Y('COLLISION COUNT:Q',
-                title='Number of Collisions'),
+        x=alt.X('PRCP:Q', title='Precipitation'),
+        y=alt.Y('COLLISION COUNT:Q', title=''),
         color=alt.Color('year(DATE):N',
-                        title='Year'),
-    ).properties(
-        title='Number of Collisions by Precipitation'
+                        scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
+                        legend=None)
     )
 
-    t3 = alt.Chart(data).mark_point(
+    t3 = alt.Chart(df).mark_point(
         filled=True,
         size=100,
         opacity=0.5
@@ -223,13 +242,10 @@ def plot_scatterplots(data: pd.DataFrame) -> alt.Chart:
         x=alt.X('AWND:Q',
                 scale=alt.Scale(domain=[1, 6.5]),
                 title='Wind Speed'),
-        y=alt.Y('COLLISION COUNT:Q',
-                title='Number of Collisions'),
+        y=alt.Y('COLLISION COUNT:Q', title=''),
         color=alt.Color('year(DATE):N',
                         scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
                         title='Year'),
-    ).properties(
-        title='Number of Collisions by Wind Speed'
     )
 
-    return (t1 | t2 | t3)
+    return t1, t2, t3

@@ -12,13 +12,13 @@ def app():
     st.set_page_config(page_title="Visualization Project", page_icon=":bar_chart:", layout="wide")
     st.title("Visualization Project")
 
-    # ----- SIDEBAR -----
-    with st.sidebar:
-        st.header("About")
-        st.info("This an interactive dashboard to analyze the collisions in New York City 🗽💥🚗")
+    # # ----- SIDEBAR -----
+    # with st.sidebar:
+    #     st.header("About")
+    #     st.info("This an interactive dashboard to analyze the collisions in New York City 🗽💥🚗")
 
-        st.header("Data")
-        st.info("Explain data information here.")
+    #     st.header("Data")
+    #     st.info("Explain data information here.")
 
     # ----- LOAD DATA -----
     collisions = load_data("collisions_clean.csv", "Data/")
@@ -53,10 +53,15 @@ def app():
         c = plot_slope_chart(collisions)
         st.altair_chart(c, use_container_width=True)
 
-   
+    col6, col7, col8 = st.columns(3)
     datafr = load_data('merged_data.csv', 'Data/')
-    c = plot_scatterplots(datafr)
-    st.altair_chart(c, use_container_width=True)
+    c6, c7, c8 = plot_scatterplots(datafr)
+    with col6:
+        st.altair_chart(c6, use_container_width=True)
+    with col7:
+        st.altair_chart(c7, use_container_width=True)
+    with col8:
+        st.altair_chart(c8, use_container_width=True)
 
     # ----- DATA PREVIEW -----
 
