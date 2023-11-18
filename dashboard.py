@@ -26,8 +26,17 @@ def app():
 
 
     # ----- DATA DASHBOARD -----
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col1:
+        st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
 
+    with col2:
+        st.metric(label="Wind Speed", value="10 mph", delta="1.2 mph")
+
+    with col3:
+        st.metric(label="Precipitation", value="0.2 in", delta="0.1 in")
+
+    col1, col2, col3 = st.columns([1, 2, 1])
 
     with col1:
         c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
@@ -62,8 +71,8 @@ def app():
     with col8:
         st.altair_chart(c8, use_container_width=True)
 
-    # ----- DATA PREVIEW -----
 
+    # ----- DATA PREVIEW -----
     with st.expander("Collisions Data Preview"):
         st.dataframe(collisions.head())
     with st.expander("Weather Data Preview"):

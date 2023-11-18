@@ -112,6 +112,9 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
     """
 
     map_path = "./Data/new-york-city-boroughs-ny_.geojson"
+    map_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_.geojson'
+
+    map_url = alt.Data(url=map_url, format=alt.DataFormat(property="features"))
 
     nyc_map = gpd.read_file(map_path)
     nyc_map_hex = nyc_map.h3.polyfill_resample(8)
@@ -189,7 +192,8 @@ def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
         color=alt.Color('count():Q',
                         legend=alt.Legend(title='Number of Collisions',
                                             labelFontSize=12),
-                        scale=alt.Scale(range=['#f0fff1', '#5603ad'])),
+                        scale=alt.Scale(domain=[100, 1400],
+                                        range=['#f0fff1', '#5603ad'])),
         tooltip=['DAY NAME', 'CRASH TIME INTERVAL', 'count()']
     ).properties(
         height=300
@@ -216,13 +220,13 @@ def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
 
     df.insert(0, 'COUNT', 1)
     df = df.groupby(['YEAR', 'TYPE OF DAY']).count().reset_index()
-    # divide count by 5 if it is a weekday
+
     df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['TYPE OF DAY'] == 'Weekday' else x['COUNT']/2, axis=1)
 
     slope = alt.Chart(df).mark_line().encode(
         x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('COUNT:Q', title='Collisions per Day'),
-        color=alt.Color('TYPE OF DAY:N', legend=alt.Legend(title='Day Type'))
+        color=alt.Color('TYPE OF DAY:N', legend=alt.Legend(title='Day Type', labelFontSize=11))
     )
 
     pts = alt.Chart(df).mark_point(
@@ -278,7 +282,8 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
         opacity=0.5
     ).encode(
         x=alt.X('PRCP:Q', title='Precipitation'),
-        y=alt.Y('COLLISION COUNT:Q', title=''),
+        y=alt.Y('COLLISION COUNT:Q', title='',
+                axis=alt.Axis(labels=False, ticks=False)),
         color=alt.Color('year(DATE):N',
                         scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
                         legend=None)
@@ -292,10 +297,11 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
         x=alt.X('AWND:Q',
                 scale=alt.Scale(domain=[1, 6.5]),
                 title='Wind Speed'),
-        y=alt.Y('COLLISION COUNT:Q', title=''),
+        y=alt.Y('COLLISION COUNT:Q', title='',
+                axis=alt.Axis(labels=False, ticks=False)),
         color=alt.Color('year(DATE):N',
                         scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
-                        title='Year'),
+                        legend=alt.Legend(title='Year', labelFontSize=11))
     )
 
     return t1, t2, t3
