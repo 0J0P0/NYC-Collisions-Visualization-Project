@@ -12,6 +12,7 @@ def app():
     st.set_page_config(page_title="Visualization Project", page_icon=":bar_chart:", layout="wide")
     st.title("Visualization Project")
 
+
     # # ----- SIDEBAR -----
     # with st.sidebar:
     #     st.header("About")
@@ -26,18 +27,19 @@ def app():
 
 
     # ----- DATA DASHBOARD -----
-    col1, col2, col3 = st.columns([1, 3, 1])
+    col1, col2, col3 = st.columns([1, 7, 1])
     with col1:
-        st.metric(label="Temperature", value="70 °F", delta="1.2 °F")
+        st.metric(label='Deaths 2020', value='228', delta='129%')
 
     with col2:
-        st.metric(label="Wind Speed", value="10 mph", delta="1.2 mph")
+        # c = plot_cars()
+        # st.altair_chart(c, use_container_width=True)
+        st.empty()
 
     with col3:
-        st.metric(label="Precipitation", value="0.2 in", delta="0.1 in")
+        st.metric(label='Injured 2020', value='34832', delta="-78%")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
-
+    col1, col2, col3 = st.columns([1, 3, 1])
     with col1:
         c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
         st.altair_chart(c, use_container_width=True)
@@ -50,26 +52,33 @@ def app():
     #     c = plot_hex_chart(collisions)
     #     st.altair_chart(c, use_container_width=True)
 
-    col4, col5 = st.columns([3, 1])
+    # col1, col2 = st.columns([1, 2])
+    # with col2:
+    #     c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
+    #     st.altair_chart(c, use_container_width=True)
 
-    with col4:
+    # with col2:
+    #     c = plot_lollipop_chart(collisions[['VEHICLE TYPE CODE 1']])
+
+    col1, col2 = st.columns([3, 1])
+    with col1:
         c = plot_heatmap(collisions[['CRASH TIME INTERVAL', 'DAY NAME', 'YEAR']])
         st.altair_chart(c, use_container_width=True)
 
-    with col5:
+    with col2:
         c = plot_slope_chart(collisions[['YEAR', 'TYPE OF DAY']])
         st.altair_chart(c, use_container_width=True)
 
-    col6, col7, col8 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
     comb_data = load_data('merged_data.csv', 'Data/')
-    c6, c7, c8 = plot_scatterplots(comb_data)
+    c1, c2, c3 = plot_scatterplots(comb_data)
     
-    with col6:
-        st.altair_chart(c6, use_container_width=True)
-    with col7:
-        st.altair_chart(c7, use_container_width=True)
-    with col8:
-        st.altair_chart(c8, use_container_width=True)
+    with col1:
+        st.altair_chart(c1, use_container_width=True)
+    with col2:
+        st.altair_chart(c2, use_container_width=True)
+    with col3:
+        st.altair_chart(c3, use_container_width=True)
 
 
     # ----- DATA PREVIEW -----
