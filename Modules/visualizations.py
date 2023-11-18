@@ -161,18 +161,18 @@ def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
 @st.cache_data
 def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
 
-    df = df.loc[:, ['YEAR', 'DAY NAME', 'WEEKDAY']]
+    df = df.loc[:, ['YEAR', 'TYPE OF DAY']]
     df.insert(0, 'COUNT', 1)
 
-    df = df.groupby(['YEAR', 'WEEKDAY']).count().reset_index()
+    df = df.groupby(['YEAR', 'TYPE OF DAY']).count().reset_index()
     # divide count by 5 if it is a weekday
-    df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['WEEKDAY'] == 'Weekday' else x['COUNT']/2, axis=1)
+    df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['TYPE OF DAY'] == 'Weekday' else x['COUNT']/2, axis=1)
 
 
     slope = alt.Chart(df).mark_line().encode(
         x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('COUNT:Q', title='Collisions per Day'),
-        color=alt.Color('WEEKDAY:N', legend=alt.Legend(title='Day Type'))
+        color=alt.Color('TYPE OF DAY:N', legend=alt.Legend(title='Day Type'))
     )
 
     pts = alt.Chart(df).mark_point(
