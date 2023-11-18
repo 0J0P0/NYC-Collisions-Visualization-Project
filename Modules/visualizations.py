@@ -1,7 +1,7 @@
 import pandas as pd
 import altair as alt
 import streamlit as st
-# import geopandas as gpd
+import geopandas as gpd
 
 
 dir = '../Data'
