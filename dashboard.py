@@ -44,18 +44,17 @@ def app():
     col4, col5 = st.columns([3, 1])
 
     with col4:
-        collisions['YEAR'] = collisions['CRASH DATE'].astype(str).str[:4]
         c = plot_heatmap(collisions[['CRASH TIME INTERVAL', 'DAY NAME', 'YEAR']])
         st.altair_chart(c, use_container_width=True)
 
     with col5:
-        collisions['WEEKDAY'] = collisions['DAY NAME'].apply(lambda x: 'Weekday' if x in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] else 'Weekend')
         c = plot_slope_chart(collisions)
         st.altair_chart(c, use_container_width=True)
 
     col6, col7, col8 = st.columns(3)
-    datafr = load_data('merged_data.csv', 'Data/')
-    c6, c7, c8 = plot_scatterplots(datafr)
+    comb_data = load_data('merged_data.csv', 'Data/')
+    c6, c7, c8 = plot_scatterplots(comb_data)
+    
     with col6:
         st.altair_chart(c6, use_container_width=True)
     with col7:

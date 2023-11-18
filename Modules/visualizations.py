@@ -136,9 +136,9 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
-def plot_heatmap(collisions: pd.DataFrame) -> alt.Chart:
+def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
 
-    c1 = alt.Chart(collisions).mark_rect(
+    c1 = alt.Chart(df).mark_rect(
         tooltip=True
     ).encode(
         x=alt.X('CRASH TIME INTERVAL:N',
@@ -159,9 +159,9 @@ def plot_heatmap(collisions: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
-def plot_slope_chart(collisions: pd.DataFrame) -> alt.Chart:
+def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
 
-    df = collisions.loc[:, ['YEAR', 'DAY NAME', 'WEEKDAY']]
+    df = df.loc[:, ['YEAR', 'DAY NAME', 'WEEKDAY']]
     df.insert(0, 'COUNT', 1)
 
     df = df.groupby(['YEAR', 'WEEKDAY']).count().reset_index()
@@ -191,7 +191,7 @@ def plot_slope_chart(collisions: pd.DataFrame) -> alt.Chart:
 @st.cache_data
 def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
     """
-    Creates three scatterplots to compare the number of collisions with the weather conditions.
+    Creates three scatterplots to compare the number of df with the weather conditions.
 
     Parameters
     ----------
@@ -201,13 +201,13 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
     Returns
     -------
     alt.Chart
-        Scatterplot with the mean temperature and the number of collisions.
+        Scatterplot with the mean temperature and the number of df.
     alt.Chart
-        Scatterplot with the precipitation and the number of collisions.
+        Scatterplot with the precipitation and the number of df.
     alt.Chart
-        Scatterplot with the wind speed and the number of collisions.
+        Scatterplot with the wind speed and the number of df.
     """
-    
+
     t1 = alt.Chart(df).mark_point(
         filled=True,
         size=100,

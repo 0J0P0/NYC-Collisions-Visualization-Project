@@ -40,6 +40,38 @@ def time_filter(dataset: pd.DataFrame, time_col: str) -> pd.DataFrame:
     return dataset
 
 
+def categorize_moment(hour):
+    if 5 <= int(hour) < 12:
+        return "Morning"
+    elif 12 <= int(hour) < 18:
+        return "Afternoon"
+    else:
+        return "Night"
+    
+
+def cluterize_vehicle_type(df: pd.DataFrame, col: str) -> pd.DataFrame:
+    """
+    """
+
+    df[col] = df[col].replace(['SUV', 'FLAT', '3-DOOR', 'CHEVY EXPR', 'PC', 'ELEC. UNIC', 'E REVEL SC','F150XL PIC', '2- TO', 'NEW Y', 'STREE', 'RGS', 'OMR', 'DEMA-', 'BK', 'NYPD'], 'CAR')
+
+    df[col] = df[col].replace(['99999'], 'UNKNOWN')
+
+    df[col] = df[col].replace(['BULK AGRICULTURE', 'PK', 'TANK', 'SLINGSHOT', 'UTV', 'JOHN DEERE', '1C', 'STAK', 'PALLET', 'SPRIN', 'ACCES'], 'OTHERS')
+
+    df[col] = df[col].replace(['BOX', 'DOT EQUIPM', 'DRILL RIG', 'PAS', 'LOADE', 'SGWS', 'HEAVY'], 'TRUCK')
+
+    df[col] = df[col].replace(['MOTORIZED HOME', 'CHASSIS CAB', 'SWT', 'MESSAGE SI', 'RV', 'UHAUL', 'POSTO'], 'VAN')
+
+    df[col] = df[col].replace(['MOPED', 'J1'], 'MOTORCYCLE')
+
+    df[col] = df[col].replace(['SANIT'], 'AMBULANCE')
+
+    df[col].fillna('UNKNOWN', inplace=True)
+
+    return df
+
+
 def imputation_with_ref_col(dataset: pd.DataFrame, imputed_col: str, reference_col: str, imputed_value: str) -> None:
     """
     This function imputes the values of a column with the values of another column as reference.
