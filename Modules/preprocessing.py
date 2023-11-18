@@ -41,6 +41,20 @@ def time_filter(dataset: pd.DataFrame, time_col: str) -> pd.DataFrame:
 
 
 def categorize_moment(hour):
+    """
+    This function categorizes the time of the day. The categories are: Morning, Afternoon and Night.
+
+    Parameters
+    ----------
+    hour : str
+        The hour to be categorized.
+
+    Returns
+    -------
+    str
+        The category of the hour.
+    """
+    
     if 5 <= int(hour) < 12:
         return "Morning"
     elif 12 <= int(hour) < 18:
@@ -51,6 +65,19 @@ def categorize_moment(hour):
 
 def cluterize_vehicle_type(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """
+    This function clusters the vehicle types in the dataset.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The dataset to be clustered.
+    col : str
+        The column to be clustered.
+    
+    Returns
+    -------
+    pd.DataFrame
+        The clustered dataset.
     """
 
     df[col] = df[col].replace(['SUV', 'FLAT', '3-DOOR', 'CHEVY EXPR', 'PC', 'ELEC. UNIC', 'E REVEL SC','F150XL PIC', '2- TO', 'NEW Y', 'STREE', 'RGS', 'OMR', 'DEMA-', 'BK', 'NYPD'], 'CAR')
@@ -87,4 +114,5 @@ def imputation_with_ref_col(dataset: pd.DataFrame, imputed_col: str, reference_c
     imputed_value : str
         The value to be imputed.
     """
+    
     dataset[imputed_col] = dataset.apply(lambda x: imputed_value if not pd.isnull(x[reference_col]) and pd.isnull(x[imputed_col]) else x[imputed_col], axis=1)
