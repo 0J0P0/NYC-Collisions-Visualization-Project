@@ -26,7 +26,7 @@ def app():
 
 
     # ----- DATA DASHBOARD -----
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns([1, 2, 1])
 
 
     with col1:

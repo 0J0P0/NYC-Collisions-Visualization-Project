@@ -1,9 +1,9 @@
+import os
 import pandas as pd
 import altair as alt
+import h3pandas as h3
 import streamlit as st
 import geopandas as gpd
-import os
-import h3pandas as h3
 
 
 dir = '../Data'
@@ -14,6 +14,17 @@ colores_hex = ['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff', '#ffff66',
 @st.cache_data
 def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
     """
+    Creates a radial chart to show the number of collisions by vehicle type.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the collisions data.
+    
+    Returns
+    -------
+    alt.Chart
+        Radial chart with the number of collisions by vehicle type.
     """
 
     c = alt.Chart(df).encode(
@@ -25,7 +36,10 @@ def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
     color=alt.Color("VEHICLE TYPE CODE 1:N",
                     sort=alt.EncodingSortField(field="count", op="count", order='descending'),
                     scale=alt.Scale(range=colores_hex),
-                    legend=alt.Legend(title="Vehicle Type")),
+                    legend=None),
+                    # legend=alt.Legend(title="Vehicle Type",
+                    #                     orient='left',
+                    #                   labelFontSize=10)),
     ).mark_arc(
         innerRadius=5, stroke="#fff"
     )
@@ -45,6 +59,17 @@ def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
 @st.cache_data
 def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
     """
+    Creates a line chart to show the number of collisions during the day by borough.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the collisions data.
+    
+    Returns
+    -------
+    alt.Chart
+        Line chart with the number of collisions during the day by borough.
     """
 
     population = pd.DataFrame({
@@ -56,9 +81,7 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
 
     population['MEAN POPULATION'] = population[['POPULATION_2018', 'POPULATION_2020']].mean(axis=1)
 
-    df = df[['BOROUGH', 'CRASH TIME INTERVAL']]
     df.insert(0, 'COUNT', 1)
-
     df = df.groupby(['BOROUGH', 'CRASH TIME INTERVAL']).count().reset_index()
     df = df.merge(population[['BOROUGH', 'MEAN POPULATION', 'CAR OWNERSHIP']], on='BOROUGH', how='left')
 
@@ -69,10 +92,12 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
     size=2
     ).encode(
         x=alt.X('CRASH TIME INTERVAL:N',
+                title='Hour of the Day',
                 axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('NORMALIZED COUNT:Q'),
+        y=alt.Y('NORMALIZED COUNT:Q', title='Number of Collisions'),
         color=alt.Color('BOROUGH:N',
-                        legend=alt.Legend(title="Borough",
+                        legend=alt.Legend(title='Borough',
+                                          labelFontSize=10,
                                           orient='bottom'),
                         scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff']))
     )
