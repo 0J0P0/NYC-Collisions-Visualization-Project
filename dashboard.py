@@ -37,11 +37,29 @@ def app():
         c = plot_line_chart(collisions[['BOROUGH', 'CRASH TIME INTERVAL']])
         st.altair_chart(c, use_container_width=True)
 
-    with col3:
-        c = plot_hex_chart(collisions)
+    # with col3:
+    #     c = plot_hex_chart(collisions)
+    #     st.altair_chart(c, use_container_width=True)
+
+    col4, col5 = st.columns([3, 1])
+
+    with col4:
+        collisions['YEAR'] = collisions['CRASH DATE'].astype(str).str[:4]
+        c = plot_heatmap(collisions[['CRASH TIME INTERVAL', 'DAY NAME', 'YEAR']])
         st.altair_chart(c, use_container_width=True)
 
+    with col5:
+        collisions['WEEKDAY'] = collisions['DAY NAME'].apply(lambda x: 'Weekday' if x in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] else 'Weekend')
+        c = plot_slope_chart(collisions)
+        st.altair_chart(c, use_container_width=True)
+
+   
+    datafr = load_data('merged_data.csv', 'Data/')
+    c = plot_scatterplots(datafr)
+    st.altair_chart(c, use_container_width=True)
+
     # ----- DATA PREVIEW -----
+
     with st.expander("Collisions Data Preview"):
         st.dataframe(collisions.head())
     with st.expander("Weather Data Preview"):

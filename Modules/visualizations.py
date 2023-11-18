@@ -2,6 +2,8 @@ import pandas as pd
 import altair as alt
 import streamlit as st
 import geopandas as gpd
+import os
+import h3pandas as h3
 
 
 dir = '../Data'
@@ -83,11 +85,16 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
     """
     """
 
-    nyc_map = gpd.read_file(f'{dir}/new-york-city-boroughs-ny_.geojson')
+    file_path = "./Data/new-york-city-boroughs-ny_.geojson"
+
+    nyc_map = gpd.read_file(file_path)
     nyc_map_hex = nyc_map.h3.polyfill_resample(8)
     nyc_map_hex = nyc_map_hex.reset_index()
 
     collisions_geo = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df['LONGITUDE'], df['LATITUDE']))
+
+    collisions_geo.crs = "EPSG:4326"
+    nyc_map_hex.crs = "EPSG:4326"
 
     df = collisions_geo.sjoin(nyc_map_hex, how='right')
 
@@ -124,4 +131,105 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
         type='identity', reflectY=True
     )
 
+    print(type(c1 + c2))
     return c1 + c2
+
+def plot_heatmap(collisions: pd.DataFrame) -> alt.Chart:
+
+    c1 = alt.Chart(collisions).mark_rect(
+        tooltip=True
+    ).encode(
+        x=alt.X('CRASH TIME INTERVAL:N',
+                title='Hour of the Day',
+                axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('DAY NAME:N',
+                sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                title='Day of the Week'),
+        color=alt.Color('count():Q',
+                        title='Number of Collisions',
+                        scale=alt.Scale(range=['#f0fff1', '#5603ad'])),
+        tooltip=['count()']
+    ).properties(
+        title='Number of Collisions by Hour of the Day and Day of the Week in 2018'
+    )
+
+    return c1
+
+def plot_slope_chart(collisions: pd.DataFrame) -> alt.Chart:
+
+    df = collisions.loc[:, ['YEAR', 'DAY NAME', 'WEEKDAY']]
+    df.insert(0, 'COUNT', 1)
+
+    df = df.groupby(['YEAR', 'WEEKDAY']).count().reset_index()
+    # divide count by 5 if it is a weekday
+    df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['WEEKDAY'] == 'Weekday' else x['COUNT']/2, axis=1)
+
+
+    slope = alt.Chart(df).mark_line().encode(
+        x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('COUNT:Q', title='Collisions per Day'),
+        color=alt.Color('WEEKDAY:N', legend=alt.Legend(title='Day Type'))
+    )
+
+    pts = alt.Chart(df).mark_point(
+        filled=True,
+        opacity=1
+    ).encode(
+        x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('COUNT:Q', title='Collisions per Day'),
+        color=alt.Color('WEEKDAY:N',
+                        scale=alt.Scale(range=['#B3E9C7', '#8367C7']),
+                        legend=None)
+    )
+    return alt.layer(slope, pts)
+
+def plot_scatterplots(data: pd.DataFrame) -> alt.Chart:
+    t1 = alt.Chart(data).mark_point(
+        filled=True,
+        size=100,
+        opacity=0.5
+    ).encode(
+        x=alt.X('MEAN_TEMP:Q',
+                title='Mean Temperature',
+                scale=alt.Scale(domain=[10, 30])),
+        y=alt.Y('COLLISION COUNT:Q',
+                title='Number of Collisions'),
+        color=alt.Color('year(DATE):N',
+                        title='Year')
+    ).properties(
+        title='Number of Collisions by Mean Temperature'
+    )
+
+    t2 = alt.Chart(data).mark_point(
+        filled=True,
+        size=100,
+        opacity=0.5
+    ).encode(
+        x=alt.X('PRCP:Q',
+                title='Precipitation'),
+        y=alt.Y('COLLISION COUNT:Q',
+                title='Number of Collisions'),
+        color=alt.Color('year(DATE):N',
+                        title='Year'),
+    ).properties(
+        title='Number of Collisions by Precipitation'
+    )
+
+    t3 = alt.Chart(data).mark_point(
+        filled=True,
+        size=100,
+        opacity=0.5
+    ).encode(
+        x=alt.X('AWND:Q',
+                scale=alt.Scale(domain=[1, 6.5]),
+                title='Wind Speed'),
+        y=alt.Y('COLLISION COUNT:Q',
+                title='Number of Collisions'),
+        color=alt.Color('year(DATE):N',
+                        scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
+                        title='Year'),
+    ).properties(
+        title='Number of Collisions by Wind Speed'
+    )
+
+    return (t1 | t2 | t3)
