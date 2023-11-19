@@ -143,7 +143,7 @@ def plot_hex_chart() -> alt.Chart:
     
     c2 = alt.Chart(borders).mark_geoshape(
         stroke='#8367C7',
-        strokeWidth=2,
+        strokeWidth=1,
         opacity=0.6,
         filled=False,
         tooltip=False
@@ -151,21 +151,20 @@ def plot_hex_chart() -> alt.Chart:
         type='identity', reflectY=True
     )
 
-    # c3 = alt.Chart(borders).mark_text(
-    #     align='center',
-    #     baseline='middle',
-    #     fontSize=12,
-    #     fontWeight='bold',
-    #     dy=-10
-    # ).encode(
-    #     longitude='properties.longitude:Q',
-    #     latitude='properties.latitude:Q',
-    #     text='properties.borough:N'
-    # ).project(
-    #     type='identity', reflectY=True
-    # )
+    boroughs = pd.read_csv('./Data/new-york-city-boroughs-names.csv')
 
-    return (c1 + c2)
+    c3 = alt.Chart(boroughs).mark_text(
+        fontWeight='bold',
+        color='#015BA0',
+        opacity=1,
+        size=18
+    ).encode(
+    longitude='lon:Q',
+    latitude='lat:Q',
+    text='name:N'
+)
+
+    return (c1 + c2 + c3)
 
 
 @st.cache_data
