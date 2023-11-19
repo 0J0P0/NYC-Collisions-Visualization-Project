@@ -116,3 +116,44 @@ def imputation_with_ref_col(dataset: pd.DataFrame, imputed_col: str, reference_c
     """
     
     dataset[imputed_col] = dataset.apply(lambda x: imputed_value if not pd.isnull(x[reference_col]) and pd.isnull(x[imputed_col]) else x[imputed_col], axis=1)
+
+
+def beaufort_scale(wind_speed_mps: float) -> str:
+    """
+    This function categorizes the wind speed according to the Beaufort Scale.
+
+    Parameters
+    ----------
+    wind_speed_mps : float
+        The wind speed to be categorized.
+    
+    Returns
+    -------
+    str
+        The category of the wind speed.
+    """
+
+    if wind_speed_mps < 0.3:
+        return "Calm"
+    elif wind_speed_mps < 1.5:
+        return "Light Air"
+    elif wind_speed_mps < 3.4:
+        return "Light Breeze"
+    elif wind_speed_mps < 5.5:
+        return "Gentle Breeze"
+    elif wind_speed_mps < 8.0:
+        return "Moderate Breeze"
+    elif wind_speed_mps < 10.8:
+        return "Fresh Breeze"
+    elif wind_speed_mps < 13.9:
+        return "Strong Breeze"
+    elif wind_speed_mps < 17.2:
+        return "Near Gale"
+    elif wind_speed_mps < 20.8:
+        return "Gale"
+    elif wind_speed_mps < 24.5:
+        return "Strong Gale"
+    elif wind_speed_mps < 28.5:
+        return "Storm"
+    else:
+        return "Hurricane"
