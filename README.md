@@ -1,5 +1,11 @@
 # Information Visualization
 
+![Dashboard 1](Images/dash1.png)
+![Dashboard 2](Images/dash2.png)
+![Dashboard 3](Images/dash3.png)
+![Dashboard 4](Images/dash4.png)
+![Dashboard 5](Images/dash5.png)
+
 # First Proyect Statement
 ## 1. Introduction
 
