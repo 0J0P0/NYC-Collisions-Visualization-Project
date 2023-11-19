@@ -23,12 +23,9 @@ def app():
     st.set_page_config(page_title="Visualization Project", page_icon=":bar_chart:", layout="wide")
     st.header("Vehicle Collisions Analysis in New York City")
     st.subheader("Data from summer months of 2018 and 2020")
+    st.write("Designed by Juan Pablo Zaldivar and Enric Millán")
     st.header("")
 
-    # ----- SIDEBAR -----
-    with st.sidebar:
-        st.header("About")
-        st.info("This a dashboard to analyze the collisions in New York City 🗽💥🚗. \n\n Designed by Juan Pablo Zaldivar and Enric Millan")
 
     # ----- LOAD DATA -----
     collisions = load_data("collisions_clean.csv", "Data/")
