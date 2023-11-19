@@ -105,60 +105,42 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
 
 
 @st.cache_data
-def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
+def plot_hex_chart() -> alt.Chart:
     """
     """
 
-    map_path = "./Data/new-york-city-boroughs-ny_.geojson"
-    map_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_.geojson'
-
-    map_url = alt.Data(url=map_url, format=alt.DataFormat(property="features"))
-
-    nyc_map = gpd.read_file(map_path)
-    nyc_map_hex = nyc_map.h3.polyfill_resample(8)
-    nyc_map_hex = nyc_map_hex.reset_index()
-
-    collisions_geo = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df['LONGITUDE'], df['LATITUDE']))
-
-    collisions_geo.crs = "EPSG:4326"
-    nyc_map_hex.crs = "EPSG:4326"
-
-    df = collisions_geo.sjoin(nyc_map_hex, how='right')
-
-    tmp = df.groupby(['h3_polyfill', 'name']).count().reset_index()
-    tmp = tmp[['h3_polyfill', 'name', 'COLLISION_ID']]
-
-
-    tmp.columns = ['h3_polyfill', 'name', 'count']
-
-    df = df.merge(tmp, on=['h3_polyfill', 'name'], how='left')
-
-    df = df[['h3_polyfill', 'name', 'count', 'geometry']]
-
-    df = df.drop_duplicates(subset=['h3_polyfill', 'name'])
+    hex_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_hex.geojson'
+    df = alt.Data(url=hex_url, format=alt.DataFormat(property="features"))
 
     c1 = alt.Chart(df).mark_geoshape(
         stroke='white',
         strokeWidth=1,
-        filled=True
+        filled=True,
+        tooltip=True
     ).encode(
-        color=alt.Color('count:Q',
+        color=alt.Color('properties.count:Q',
                         scale=alt.Scale(range=['#B3E9C7', '#5603ad']),
-                        title='Borough'),
+                        legend=alt.Legend(title='Number of Collisions',
+                                          labelFontSize=10,
+                                          orient='right')),
     ).project(
         type='identity', reflectY=True
     )
 
-    c2 = alt.Chart(map_url).mark_geoshape(
-        stroke='#1d3557',
+    map_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_.geojson'
+    borders = alt.Data(url=map_url, format=alt.DataFormat(property="features"))
+    
+    c2 = alt.Chart(borders).mark_geoshape(
+        stroke='white',
         strokeWidth=1,
         opacity=0.6,
-        filled=False
+        filled=False,
+        tooltip=False
     ).project(
         type='identity', reflectY=True
     )
 
-    return c1 + c2
+    return (c1 + c2)
 
 
 @st.cache_data

@@ -12,7 +12,6 @@ def app():
     st.set_page_config(page_title="Visualization Project", page_icon=":bar_chart:", layout="wide")
     st.title("Visualization Project")
 
-
     # # ----- SIDEBAR -----
     # with st.sidebar:
     #     st.header("About")
@@ -27,7 +26,7 @@ def app():
 
 
     # ----- DATA DASHBOARD -----
-    col1, col2 = st.columns([1, 2])
+    col1, col2 = st.columns([1, 1.8])
     with col1:
         c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
         st.altair_chart(c, use_container_width=True)
@@ -36,14 +35,13 @@ def app():
         c = plot_line_chart(collisions[['BOROUGH', 'CRASH TIME INTERVAL']])
         st.altair_chart(c, use_container_width=True)
 
-    col1, col2 = st.columns([1, 2])
-    with col2:
-        c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
-        st.altair_chart(c, use_container_width=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.empty()
 
     with col2:
-        # c = plot_lollipop_chart(collisions[['VEHICLE TYPE CODE 1']])
-        st.empty()
+        c = plot_hex_chart()
+        st.altair_chart(c, use_container_width=True)
 
     col1, col2 = st.columns([3, 1])
     with col1:
