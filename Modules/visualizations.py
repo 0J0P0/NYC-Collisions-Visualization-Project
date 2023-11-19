@@ -151,7 +151,7 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
         type='identity', reflectY=True
     )
 
-    c2 = alt.Chart(nyc_map).mark_geoshape(
+    c2 = alt.Chart(map_url).mark_geoshape(
         stroke='#1d3557',
         strokeWidth=1,
         opacity=0.6,
@@ -160,7 +160,6 @@ def plot_hex_chart(df: pd.DataFrame) -> alt.Chart:
         type='identity', reflectY=True
     )
 
-    print(type(c1 + c2))
     return c1 + c2
 
 

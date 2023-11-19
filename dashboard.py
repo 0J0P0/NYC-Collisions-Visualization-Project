@@ -48,9 +48,9 @@ def app():
         c = plot_line_chart(collisions[['BOROUGH', 'CRASH TIME INTERVAL']])
         st.altair_chart(c, use_container_width=True)
 
-    # with col3:
-    #     c = plot_hex_chart(collisions)
-    #     st.altair_chart(c, use_container_width=True)
+    with col3:
+        c = plot_hex_chart(collisions)
+        st.altair_chart(c, use_container_width=True)
 
     # col1, col2 = st.columns([1, 2])
     # with col2:
