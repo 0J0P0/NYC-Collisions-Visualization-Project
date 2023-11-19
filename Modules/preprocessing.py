@@ -1,13 +1,31 @@
 ####################################################################################################
-__author__ = "Juan P. Zaldivar & Enriq Millan"
+__author__ = "Juan P. Zaldivar & Enric Millan"
 __version__ = "1.0.0"
 ####################################################################################################
+
 """
 This module contains the functions to preprocess the collision and weather datasets.
 
 Functions:
 ----------
 
+time_filter(dataset: pd.DataFrame, time_col: str) -> pd.DataFrame
+    This function filters the dataset by a time column to get the data of the summer months of 2018 and 2020.
+
+categorize_moment(hour: str) -> str
+    This function categorizes the time of the day. The categories are: Morning, Afternoon and Night.
+
+clusterize_vehicle_type(df: pd.DataFrame, col: str) -> pd.DataFrame
+    This function clusters the vehicle types in the dataset.
+
+imputation_with_ref_col(dataset: pd.DataFrame, imputed_col: str, reference_col: str, imputed_value: str) -> None
+    This function imputes the values of a column with the values of another column as reference.
+
+beaufort_scale(wind_speed_mps: float) -> str
+    This function categorizes the wind speed according to the Beaufort Scale.
+
+rain_intensity_scale(prcp_mm: float) -> str
+    This function categorizes the rain intensity according to the rain intensity scale.
 """
 
 ####################################################################################################
@@ -173,7 +191,7 @@ def rain_intensity_scale(prcp_mm: float) -> str:
     str
         The category of the rain intensity.
     """
-    
+
     if prcp_mm < 2.5*24:
         return "Slight"
     elif prcp_mm < 10*24:

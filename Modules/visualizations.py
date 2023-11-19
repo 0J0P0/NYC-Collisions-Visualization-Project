@@ -1,15 +1,58 @@
+####################################################################################################
+__author__ = "Juan P. Zaldivar & Enric Millan"
+__version__ = "1.0.0"
+####################################################################################################
+
+"""
+This module contains the functions to create the final visualizations.
+
+Functions:
+----------
+
+plot_radial_chart(df: pd.DataFrame) -> alt.Chart
+    Creates a radial chart to show the number of collisions by vehicle type.
+
+plot_line_chart(df: pd.DataFrame) -> alt.Chart
+    Creates a line chart to show the number of collisions during the day by borough.
+
+plot_hex_chart() -> alt.Chart
+    Creates a hexagonal map chart to show the number of collisions by borough.
+
+plot_bar_chart(df: pd.DataFrame) -> alt.Chart
+    Creates a bar chart to show the number of collisions by contributing factor.
+
+plot_heatmap(df: pd.DataFrame) -> alt.Chart
+    Creates a heatmap to show the number of collisions by hour of the day and day of the week.
+
+plot_slope_chart(df: pd.DataFrame) -> alt.Chart
+    Creates a slope chart to show the number of collisions by day type.
+
+plot_scatterplots(df: pd.DataFrame) -> alt.Chart
+    Creates three scatterplots to compare the number of df with the weather conditions.
+
+plot_cars(idx: int, year: str)
+    Creates a row of cars to show the number of collisions with injured people.
+"""
+
+####################################################################################################
+# IMPORTS ################################################################################ IMPORTS #
+####################################################################################################
 import pandas as pd
 import altair as alt
-import h3pandas as h3
 import streamlit as st
-import geopandas as gpd
 
 
+####################################################################################################
+# GLOBAL VARIABLES ################################################################ GLOBAL VARIABLES #
+####################################################################################################
 dir = '../Data'
 
 colores_hex = ['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff', '#ffff66', '#ffcc66', '#c9cba3', '#66cccc', '#ff66b3', '#ffb056', '#98c1d9', '#ffafcc']
 
 
+####################################################################################################
+# FUNCTIONS ############################################################################ FUNCTIONS #
+####################################################################################################
 @st.cache_data
 def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
     """
