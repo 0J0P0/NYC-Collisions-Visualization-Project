@@ -27,17 +27,19 @@ def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
     """
 
     c = alt.Chart(df).encode(
-    alt.Theta("VEHICLE TYPE CODE 1:N",
-              stack = True,
-              sort=alt.EncodingSortField(field="count", op="count", order='descending')),
-    alt.Radius("count()",
-               scale=alt.Scale(type="sqrt", zero=True, rangeMin=20)),
-    color=alt.Color("VEHICLE TYPE CODE 1:N",
-                    sort=alt.EncodingSortField(field="count", op="count", order='descending'),
-                    scale=alt.Scale(range=colores_hex),
-                    legend=alt.Legend(title="Vehicle Type",
+        alt.Theta("VEHICLE TYPE CODE 1:N",
+                stack = True,
+                sort=alt.EncodingSortField(field="count", op="count", order='descending')),
+        alt.Radius("count()",
+                scale=alt.Scale(type="sqrt", zero=True, rangeMin=20)),
+        color=alt.Color("VEHICLE TYPE CODE 1:N",
+                        sort=alt.EncodingSortField(field="count",
+                                                op="count",
+                                                order='descending'),
+                        scale=alt.Scale(range=colores_hex),
+                        legend=alt.Legend(title="Vehicle Type",
                                         orient='left',
-                                      labelFontSize=10))
+                                        labelFontSize=10))
     ).mark_arc(
         innerRadius=5, stroke="#fff"
     )
@@ -78,11 +80,10 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
     })
 
     population['MEAN POPULATION'] = population[['POPULATION_2018', 'POPULATION_2020']].mean(axis=1)
-
     df.insert(0, 'COUNT', 1)
+
     df = df.groupby(['BOROUGH', 'CRASH TIME INTERVAL']).count().reset_index()
     df = df.merge(population[['BOROUGH', 'MEAN POPULATION', 'CAR OWNERSHIP']], on='BOROUGH', how='left')
-
     df['NORMALIZED COUNT'] = df['COUNT'] * df['CAR OWNERSHIP'] 
 
     c = alt.Chart(df).mark_line(
@@ -99,6 +100,8 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
                                           orient='bottom'),
                         scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff'])),
         tooltip=['BOROUGH', 'CRASH TIME INTERVAL', 'COUNT']
+    ).properties(
+        title='Collisions by Hour of the Day'
     )
 
     return c
@@ -107,6 +110,12 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
 @st.cache_data
 def plot_hex_chart() -> alt.Chart:
     """
+    Creates a hexagonal map chart to show the number of collisions by borough.
+
+    Returns
+    -------
+    alt.Chart
+        Hexagonal map chart with the number of collisions by borough.
     """
 
     hex_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_hex.geojson'
@@ -125,6 +134,8 @@ def plot_hex_chart() -> alt.Chart:
                                           orient='right')),
     ).project(
         type='identity', reflectY=True
+    ).properties(
+        title='Collisions by Borough'
     )
 
     map_url = 'https://raw.githubusercontent.com/0J0P0/Visualization-Project/main/Data/new-york-city-boroughs-ny_.geojson'
@@ -132,7 +143,7 @@ def plot_hex_chart() -> alt.Chart:
     
     c2 = alt.Chart(borders).mark_geoshape(
         stroke='#8367C7',
-        strokeWidth=1,
+        strokeWidth=2,
         opacity=0.6,
         filled=False,
         tooltip=False
@@ -140,20 +151,43 @@ def plot_hex_chart() -> alt.Chart:
         type='identity', reflectY=True
     )
 
+    # c3 = alt.Chart(borders).mark_text(
+    #     align='center',
+    #     baseline='middle',
+    #     fontSize=12,
+    #     fontWeight='bold',
+    #     dy=-10
+    # ).encode(
+    #     longitude='properties.longitude:Q',
+    #     latitude='properties.latitude:Q',
+    #     text='properties.borough:N'
+    # ).project(
+    #     type='identity', reflectY=True
+    # )
+
     return (c1 + c2)
 
 
 @st.cache_data
 def plot_bar_chart(df: pd.DataFrame) -> alt.Chart:
     """
+    Creates a bar chart to show the number of collisions by contributing factor.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the collisions data.
+    
+    Returns
+    -------
+    alt.Chart
+        Bar chart with the number of collisions by contributing factor.
     """
 
     df = df.groupby('CONTRIBUTING FACTOR VEHICLE 1').count().reset_index()
-
     df = df.sort_values(by='COLLISION_ID', ascending=False)
 
     df = df[df['CONTRIBUTING FACTOR VEHICLE 1'] != 'Unspecified']
-
     df.columns = ['CONTRIBUTING FACTOR VEHICLE 1', 'COUNT']
     df = df.head(5)
 
@@ -168,7 +202,7 @@ def plot_bar_chart(df: pd.DataFrame) -> alt.Chart:
                 title='Number of Collisions'),
         tooltip=['CONTRIBUTING FACTOR VEHICLE 1:N', 'COUNT:Q']
     ).properties(
-        title='Number of Collisions by Contributing Factor'
+        title='Collisions by Contributing Factor'
     ).configure_mark(
         color='#8367C7'
     )
@@ -202,13 +236,14 @@ def plot_heatmap(df: pd.DataFrame) -> alt.Chart:
                 sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 title='Day of the Week'),
         color=alt.Color('count():Q',
-                        legend=alt.Legend(title='Number of Collisions',
+                        legend=alt.Legend(title='Collisions',
                                             labelFontSize=12),
                         scale=alt.Scale(domain=[100, 1400],
                                         range=['#f0fff1', '#5603ad'])),
         tooltip=['DAY NAME', 'CRASH TIME INTERVAL', 'count()']
     ).properties(
-        height=300
+        height=300,
+        title='Collisions by Hour of the Day and Day of the Week'
     )
 
     return c1
@@ -232,12 +267,11 @@ def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
 
     df.insert(0, 'COUNT', 1)
     df = df.groupby(['YEAR', 'TYPE OF DAY']).count().reset_index()
-
     df['COUNT'] = df.apply(lambda x: x['COUNT']/5 if x['TYPE OF DAY'] == 'Weekday' else x['COUNT']/2, axis=1)
 
     slope = alt.Chart(df).mark_line().encode(
         x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('COUNT:Q', title='Number of Collisions'),
+        y=alt.Y('COUNT:Q', title='Collisions'),
         color=alt.Color('TYPE OF DAY:N', legend=alt.Legend(title='Day Type', labelFontSize=11))
     )
 
@@ -245,13 +279,13 @@ def plot_slope_chart(df: pd.DataFrame) -> alt.Chart:
         filled=True,
         opacity=1
     ).encode(
-        x=alt.X('YEAR:N', title='Year', axis=alt.Axis(labelAngle=0)),
-        y=alt.Y('COUNT:Q', title='Collisions per Day'),
+        x=alt.X('YEAR:N', title='', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('COUNT:Q', title=''),
         color=alt.Color('TYPE OF DAY:N',
                         scale=alt.Scale(range=['#B3E9C7', '#8367C7']),
                         legend=None)
     )
-    return alt.layer(slope, pts).properties(height=300)
+    return alt.layer(slope, pts).properties(height=300, title='Collisions by Day Type')
 
 
 @st.cache_data
@@ -282,7 +316,7 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
         x=alt.X('MEAN_TEMP:Q',
                 title='Mean Temperature',
                 scale=alt.Scale(domain=[10, 30])),
-        y=alt.Y('COLLISION COUNT:Q', title='Number of Collisions'),
+        y=alt.Y('COLLISION COUNT:Q', title='Collisions'),
         color=alt.Color('year(DATE):N',
                         scale=alt.Scale(range=['#A7C9C7', '#8367C7']),
                         legend=None)

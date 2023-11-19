@@ -26,6 +26,28 @@ def app():
     collisions = load_data("collisions_clean.csv", "Data/")
     weather = load_data("weather_clean.csv", "Data/")
 
+    # ----- DATA METRICS -----
+    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
+    with col1:
+        c = plot_cars(5, '2018')
+        st.altair_chart(c, use_container_width=True)
+    with col2:
+        st.metric(label='Deaths 2018', value='177', delta='')
+    with col3:
+        st.metric(label='Injured 2018', value='44459', delta='')
+    with col4:
+        st.metric(label='Collisions 2018', value='79383', delta='')
+
+    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
+    with col1:
+        c = plot_cars(9, '2020')
+        st.altair_chart(c, use_container_width=True)
+    with col2:
+        st.metric(label='Deaths 2020', value='228', delta='129%')
+    with col3:
+        st.metric(label='Injured 2020', value='34832', delta='-78%')
+    with col4:
+        st.metric(label='Collisions 2020', value='36357', delta='46%')
 
     # ----- DATA DASHBOARD -----
     col1, col2 = st.columns([1, 1.8])
@@ -65,29 +87,6 @@ def app():
         st.altair_chart(c2, use_container_width=True)
     with col3:
         st.altair_chart(c3, use_container_width=True)
-
-    # ----- DATA METRICS -----
-    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
-    with col1:
-        c = plot_cars(5, '2018')
-        st.altair_chart(c, use_container_width=True)
-    with col2:
-        st.metric(label='Deaths 2018', value='177', delta='')
-    with col3:
-        st.metric(label='Injured 2018', value='44459', delta='')
-    with col4:
-        st.metric(label='Collisions 2018', value='79383', delta='')
-
-    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
-    with col1:
-        c = plot_cars(9, '2020')
-        st.altair_chart(c, use_container_width=True)
-    with col2:
-        st.metric(label='Deaths 2020', value='228', delta='129%')
-    with col3:
-        st.metric(label='Injured 2020', value='34832', delta='-78%')
-    with col4:
-        st.metric(label='Collisions 2020', value='36357', delta='46%')
 
     # ----- DATA PREVIEW -----
     with st.expander("Collisions Data Preview"):
