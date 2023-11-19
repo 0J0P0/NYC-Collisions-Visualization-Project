@@ -1,8 +1,33 @@
+####################################################################################################
+__author__ = "Juan P. Zaldivar & Enric Millan"
+__version__ = "1.0.0"
+####################################################################################################
+
+"""
+This module contains the functions for the web app.
+
+Functions:
+----------
+
+load_data(file: str, path: str = "./") -> pd.DataFrame
+    This function loads the data from a csv file.
+
+app()
+    This function creates the web app.
+"""
+
+
+####################################################################################################
+# IMPORTS ################################################################################ IMPORTS #
+####################################################################################################
 import pandas as pd
 import streamlit as st
 from Modules.visualizations import *
 
 
+####################################################################################################
+# FUNCTIONS ############################################################################ FUNCTIONS #
+####################################################################################################
 @st.cache_data
 def load_data(file: str, path: str = "./") -> pd.DataFrame:
     return pd.read_csv(path + file)
@@ -13,14 +38,6 @@ def app():
     st.header("Vehicle Collisions Analysis in New York City")
     st.subheader("Data from summer months of 2018 and 2020")
     st.header("")
-
-    # # ----- SIDEBAR -----
-    # with st.sidebar:
-    #     st.header("About")
-    #     st.info("This an interactive dashboard to analyze the collisions in New York City 🗽💥🚗")
-
-    #     st.header("Data")
-    #     st.info("Explain data information here.")
 
     # ----- LOAD DATA -----
     collisions = load_data("collisions_clean.csv", "Data/")
