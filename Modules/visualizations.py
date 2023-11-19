@@ -91,7 +91,7 @@ def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
         align='center',
         baseline='middle',
         radiusOffset=20,
-        fontSize=12.5,
+        fontSize=10,
     ).encode(
         text='count()'
     )
@@ -144,7 +144,7 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
                         scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff'])),
         tooltip=['BOROUGH', 'CRASH TIME INTERVAL', 'COUNT']
     ).properties(
-        title='Collisions by Hour of the Day, normalized by Car Ownership'
+        title='Collisions by Hour of the Day, Normalized by Car Ownership'
     )
 
     return c
@@ -202,10 +202,10 @@ def plot_hex_chart() -> alt.Chart:
         opacity=1,
         size=18
     ).encode(
-    longitude='lon:Q',
-    latitude='lat:Q',
-    text='name:N'
-)
+        longitude='lon:Q',
+        latitude='lat:Q',
+        text='name:N'
+    )
 
     return (c1 + c2 + c3)
 
@@ -356,7 +356,7 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
         opacity=0.5
     ).encode(
         x=alt.X('MEAN_TEMP:Q',
-                title='Mean Temperature',
+                title='Mean Temperature (Cº)',
                 scale=alt.Scale(domain=[10, 30])),
         y=alt.Y('COLLISION COUNT:Q', title='Collisions'),
         color=alt.Color('year(DATE):N',
@@ -369,7 +369,7 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
         size=100,
         opacity=0.5
     ).encode(
-        x=alt.X('PRCP:Q', title='Precipitation'),
+        x=alt.X('PRCP:Q', title='Mean Precipitation (mm)'),
         y=alt.Y('COLLISION COUNT:Q', title='',
                 axis=alt.Axis(labels=False, ticks=False)),
         color=alt.Color('year(DATE):N',
@@ -384,7 +384,7 @@ def plot_scatterplots(df: pd.DataFrame) -> alt.Chart:
     ).encode(
         x=alt.X('AWND:Q',
                 scale=alt.Scale(domain=[1, 6.5]),
-                title='Wind Speed'),
+                title='Mean Wind Speed (m/s)'),
         y=alt.Y('COLLISION COUNT:Q', title='',
                 axis=alt.Axis(labels=False, ticks=False)),
         color=alt.Color('year(DATE):N',
