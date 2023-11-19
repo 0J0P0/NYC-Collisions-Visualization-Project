@@ -157,3 +157,28 @@ def beaufort_scale(wind_speed_mps: float) -> str:
         return "Storm"
     else:
         return "Hurricane"
+    
+
+def rain_intensity_scale(prcp_mm: float) -> str:
+    """
+    This function categorizes the rain intensity according to the rain intensity scale.
+
+    Parameters
+    ----------
+    prcp_mm : float
+        The rain intensity to be categorized.
+    
+    Returns
+    -------
+    str
+        The category of the rain intensity.
+    """
+    
+    if prcp_mm < 2.5*24:
+        return "Slight"
+    elif prcp_mm < 10*24:
+        return "Moderate"
+    elif prcp_mm < 50*24:
+        return "Heavy"
+    else:
+        return "Violent"
