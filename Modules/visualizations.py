@@ -101,7 +101,7 @@ def plot_line_chart(df: pd.DataFrame) -> alt.Chart:
                         scale=alt.Scale(range=['#a3ffd6', '#d69bf5', '#ff8080', '#80ff80', '#80bfff'])),
         tooltip=['BOROUGH', 'CRASH TIME INTERVAL', 'COUNT']
     ).properties(
-        title='Collisions by Hour of the Day'
+        title='Collisions by Hour of the Day, normalized by Car Ownership'
     )
 
     return c
