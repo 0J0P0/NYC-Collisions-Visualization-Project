@@ -27,19 +27,7 @@ def app():
 
 
     # ----- DATA DASHBOARD -----
-    col1, col2, col3 = st.columns([1, 7, 1])
-    with col1:
-        st.metric(label='Deaths 2020', value='228', delta='129%')
-
-    with col2:
-        # c = plot_cars()
-        # st.altair_chart(c, use_container_width=True)
-        st.empty()
-
-    with col3:
-        st.metric(label='Injured 2020', value='34832', delta="-78%")
-
-    col1, col2, col3 = st.columns([1, 3, 1])
+    col1, col2 = st.columns([1, 2])
     with col1:
         c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
         st.altair_chart(c, use_container_width=True)
@@ -48,17 +36,14 @@ def app():
         c = plot_line_chart(collisions[['BOROUGH', 'CRASH TIME INTERVAL']])
         st.altair_chart(c, use_container_width=True)
 
-    with col3:
-        c = plot_hex_chart(collisions)
+    col1, col2 = st.columns([1, 2])
+    with col2:
+        c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
         st.altair_chart(c, use_container_width=True)
 
-    # col1, col2 = st.columns([1, 2])
-    # with col2:
-    #     c = plot_radial_chart(collisions[['VEHICLE TYPE CODE 1']])
-    #     st.altair_chart(c, use_container_width=True)
-
-    # with col2:
-    #     c = plot_lollipop_chart(collisions[['VEHICLE TYPE CODE 1']])
+    with col2:
+        # c = plot_lollipop_chart(collisions[['VEHICLE TYPE CODE 1']])
+        st.empty()
 
     col1, col2 = st.columns([3, 1])
     with col1:
@@ -80,6 +65,28 @@ def app():
     with col3:
         st.altair_chart(c3, use_container_width=True)
 
+    # ----- DATA METRICS -----
+    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
+    with col1:
+        c = plot_cars(5, '2018')
+        st.altair_chart(c, use_container_width=True)
+    with col2:
+        st.metric(label='Deaths 2018', value='177', delta='')
+    with col3:
+        st.metric(label='Injured 2018', value='44459', delta='')
+    with col4:
+        st.metric(label='Collisions 2018', value='79383', delta='')
+
+    col1, col2, col3, col4 = st.columns([5, 1, 1, 1])
+    with col1:
+        c = plot_cars(9, '2020')
+        st.altair_chart(c, use_container_width=True)
+    with col2:
+        st.metric(label='Deaths 2020', value='228', delta='129%')
+    with col3:
+        st.metric(label='Injured 2020', value='34832', delta='-78%')
+    with col4:
+        st.metric(label='Collisions 2020', value='36357', delta='46%')
 
     # ----- DATA PREVIEW -----
     with st.expander("Collisions Data Preview"):

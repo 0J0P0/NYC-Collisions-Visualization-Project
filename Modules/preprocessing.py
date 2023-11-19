@@ -63,7 +63,7 @@ def categorize_moment(hour):
         return "Night"
     
 
-def cluterize_vehicle_type(df: pd.DataFrame, col: str) -> pd.DataFrame:
+def clusterize_vehicle_type(df: pd.DataFrame, col: str) -> pd.DataFrame:
     """
     This function clusters the vehicle types in the dataset.
 
