@@ -10,7 +10,9 @@ def load_data(file: str, path: str = "./") -> pd.DataFrame:
 
 def app():
     st.set_page_config(page_title="Visualization Project", page_icon=":bar_chart:", layout="wide")
-    st.title("Visualization Project")
+    st.header("Vehicle Collisions Analysis in New York City")
+    st.subheader("Data from summer months of 2018 and 2020")
+    st.header("")
 
     # # ----- SIDEBAR -----
     # with st.sidebar:
@@ -37,7 +39,8 @@ def app():
 
     col1, col2 = st.columns(2)
     with col1:
-        st.empty()
+        c = plot_bar_chart(collisions[['CONTRIBUTING FACTOR VEHICLE 1', 'COLLISION_ID']])
+        st.altair_chart(c, use_container_width=True)
 
     with col2:
         c = plot_hex_chart()

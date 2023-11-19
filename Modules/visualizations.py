@@ -51,7 +51,7 @@ def plot_radial_chart(df: pd.DataFrame) -> alt.Chart:
         text='count()'
     )
 
-    return c + text
+    return alt.layer(c + text).properties(title='Collisions by Vehicle Type')
 
 
 @st.cache_data
@@ -120,7 +120,7 @@ def plot_hex_chart() -> alt.Chart:
     ).encode(
         color=alt.Color('properties.count:Q',
                         scale=alt.Scale(range=['#B3E9C7', '#5603ad']),
-                        legend=alt.Legend(title='Number of Collisions',
+                        legend=alt.Legend(title='Collisions',
                                           labelFontSize=10,
                                           orient='right')),
     ).project(
@@ -131,7 +131,7 @@ def plot_hex_chart() -> alt.Chart:
     borders = alt.Data(url=map_url, format=alt.DataFormat(property="features"))
     
     c2 = alt.Chart(borders).mark_geoshape(
-        stroke='white',
+        stroke='#8367C7',
         strokeWidth=1,
         opacity=0.6,
         filled=False,
@@ -141,6 +141,39 @@ def plot_hex_chart() -> alt.Chart:
     )
 
     return (c1 + c2)
+
+
+@st.cache_data
+def plot_bar_chart(df: pd.DataFrame) -> alt.Chart:
+    """
+    """
+
+    df = df.groupby('CONTRIBUTING FACTOR VEHICLE 1').count().reset_index()
+
+    df = df.sort_values(by='COLLISION_ID', ascending=False)
+
+    df = df[df['CONTRIBUTING FACTOR VEHICLE 1'] != 'Unspecified']
+
+    df.columns = ['CONTRIBUTING FACTOR VEHICLE 1', 'COUNT']
+    df = df.head(5)
+
+    c = alt.Chart(df).mark_bar(
+        tooltip=True
+    ).encode(
+        x=alt.X('CONTRIBUTING FACTOR VEHICLE 1:N',
+                title='Contributing Factor',
+                sort=alt.EncodingSortField(field="COUNT", order="descending"),
+                axis=alt.Axis(labelAngle=-30)),
+        y=alt.Y('COUNT:Q',
+                title='Number of Collisions'),
+        tooltip=['CONTRIBUTING FACTOR VEHICLE 1:N', 'COUNT:Q']
+    ).properties(
+        title='Number of Collisions by Contributing Factor'
+    ).configure_mark(
+        color='#8367C7'
+    )
+
+    return c
 
 
 @st.cache_data
