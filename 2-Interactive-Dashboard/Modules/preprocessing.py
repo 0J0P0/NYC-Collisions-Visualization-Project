@@ -18,7 +18,6 @@ import geopandas as gpd
 from shapely.geometry import Point
 from geopy.geocoders import Nominatim
 
-
 ####################################################################################################
 #                                                                                                  #
 #   Functions                                                                                      #
