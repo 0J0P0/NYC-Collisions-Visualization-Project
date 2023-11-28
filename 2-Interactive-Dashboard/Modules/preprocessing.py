@@ -24,6 +24,27 @@ from geopy.geocoders import Nominatim
 #                                                                                                  #
 ####################################################################################################
 
+def capitalize_boroughs(borough):
+    """
+    Capitalize the borough name
+
+    Parameters
+    ----------
+    borough : str
+        Borough name to be capitalized
+
+    Returns
+    -------
+    b : str
+        Capitalized borough name
+    """
+
+    b = ''
+    for word in borough.split():
+        b += word.capitalize() + ' '
+    return b.strip()
+
+
 def capitalize_street(street_name):
     """
     Capitalize the street name
