@@ -10,7 +10,6 @@ conditions = alt.selection_multi(fields=['icon', 'CONST'], resolve='global')
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1', 'COSNT'], resolve='global')
 
 
-
 def params_chart(c: alt.Chart, filters: list = None):
     """
     .
@@ -85,8 +84,7 @@ def heatmap_chart(df: pd.DataFrame, palette: list, filters: list = None):
     .
     """
 
-    base = alt.Chart(df)
-    heat = base.mark_rect().encode(
+    heat = alt.Chart(df).mark_rect().encode(
         x=alt.X('HOUR:O',
                 axis=alt.Axis(labelAngle=0),
                 title='Hour of the Day'),
@@ -101,7 +99,7 @@ def heatmap_chart(df: pd.DataFrame, palette: list, filters: list = None):
         height=200
     )
 
-    base_hist = base.mark_bar(opacity=0.8, binSpacing=0, color=palette[1])
+    base_hist = alt.Chart(df).mark_bar(opacity=0.8, binSpacing=0, color=palette[1])
 
     ver_hist = base_hist.encode(
         x=alt.X('count():Q',
