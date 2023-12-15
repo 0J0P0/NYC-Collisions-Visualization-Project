@@ -29,7 +29,7 @@ def params_chart(c: alt.Chart, filters: list = None):
     return c
 
 
-def legend_chart(df: pd.DataFrame, palette: list):
+def legend_chart(df: pd.DataFrame, palette: str = 'category20'):
     """
     .
     """
@@ -40,7 +40,7 @@ def legend_chart(df: pd.DataFrame, palette: list):
                 sort=['June', 'July', 'August', 'September'],
                 axis=alt.Axis(labelAngle=0)),
         color = alt.condition(months,
-                              alt.Color('MONTH:N', scale=alt.Scale(range=palette), legend=None),
+                              alt.Color('MONTH:N', scale=alt.Scale(scheme=palette), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         months
@@ -53,7 +53,7 @@ def legend_chart(df: pd.DataFrame, palette: list):
                 title='Weather Conditions',
                 axis=alt.Axis(labelAngle=0)),
         color = alt.condition(conditions,
-                              alt.Color('icon:N', scale=alt.Scale(range=palette), legend=None),
+                              alt.Color('icon:N', scale=alt.Scale(scheme=palette), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         conditions
@@ -66,7 +66,7 @@ def legend_chart(df: pd.DataFrame, palette: list):
                 title='Vehicle Type',
                 axis=alt.Axis(labelAngle=0)),
         color = alt.condition(vehicles,
-                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(range=palette), legend=None),
+                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(scheme=palette), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         vehicles
@@ -79,7 +79,7 @@ def legend_chart(df: pd.DataFrame, palette: list):
     return legends
 
 
-def heatmap_chart(df: pd.DataFrame, palette: list, filters: list = None):
+def heatmap_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None):
     """
     .
     """
@@ -93,13 +93,13 @@ def heatmap_chart(df: pd.DataFrame, palette: list, filters: list = None):
                 title='Day of the Week'),
         color=alt.Color('count():Q',
                         legend=None,
-                        scale=alt.Scale(range=palette)),
+                        scale=alt.Scale(scheme=palette)),
     ).properties(
         width=600,
         height=200
     )
 
-    base_hist = alt.Chart(df).mark_bar(opacity=0.8, binSpacing=0, color=palette[1])
+    base_hist = alt.Chart(df).mark_bar(opacity=0.6, binSpacing=0, color='purple')
 
     ver_hist = base_hist.encode(
         x=alt.X('count():Q',
@@ -138,7 +138,7 @@ def heatmap_chart(df: pd.DataFrame, palette: list, filters: list = None):
     return params_chart(heatmap, filters)
 
 
-def dotmap_chart(df: pd.DataFrame, map, palette: list, filters: list = None):
+def dotmap_chart(df: pd.DataFrame, map, filters: list = None):
     """
     .
     """
@@ -149,7 +149,7 @@ def dotmap_chart(df: pd.DataFrame, map, palette: list, filters: list = None):
         filled=True,
         tooltip=True
     ).encode(
-        color=alt.ColorValue(palette[0]),
+        color=alt.ColorValue('lightblue'),
         opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
         tooltip=[alt.Tooltip('BOROUGH:N'), alt.Tooltip('ZIP CODE:N')]
     ).add_params(
@@ -168,7 +168,7 @@ def dotmap_chart(df: pd.DataFrame, map, palette: list, filters: list = None):
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.value(palette[1])
+        color=alt.value('purple')
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -181,7 +181,7 @@ def dotmap_chart(df: pd.DataFrame, map, palette: list, filters: list = None):
     return nyc + points
 
 
-def scatter_chart(df: pd.DataFrame, palette: list, filters: list = None):
+def scatter_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None):
     """
     .
     """
@@ -193,7 +193,7 @@ def scatter_chart(df: pd.DataFrame, palette: list, filters: list = None):
         x=alt.X('CRASH DATE:T'),
         y=alt.Y('count()', scale=alt.Scale(zero=False)),
         color=alt.Color('temp:Q',
-                        scale=alt.Scale(range=palette),
+                        scale=alt.Scale(scheme=palette),
                         legend=alt.Legend(title="Temperature")),
     ).properties(
         width=700
@@ -202,7 +202,7 @@ def scatter_chart(df: pd.DataFrame, palette: list, filters: list = None):
     return params_chart(temp, filters)
 
 
-def bar_chart(df: pd.DataFrame, palette: list, filters: list = None):
+def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
     """
     .
     """
@@ -211,7 +211,7 @@ def bar_chart(df: pd.DataFrame, palette: list, filters: list = None):
         x=alt.X('VEHICLE TYPE CODE 1:N'),
         y=alt.Y('count()'),
         color=alt.Color('VEHICLE TYPE CODE 1:N',
-                        scale=alt.Scale(range=palette),
+                        scale=alt.Scale(scheme=palette),
                         legend=None),
         column=alt.Column('icon')
     ).properties(
