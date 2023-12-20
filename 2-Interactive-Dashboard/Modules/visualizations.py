@@ -5,8 +5,8 @@ import altair as alt
 
 click = alt.selection_point(fields=['BOROUGH'], toggle='true')
 
-months = alt.selection_multi(fields=['MONTH', 'CONST'], resolve='global')
-conditions = alt.selection_multi(fields=['icon', 'CONST'], resolve='global')
+months = alt.selection_multi(fields=['MONTH'], resolve='global')
+conditions = alt.selection_multi(fields=['icon'], resolve='global')
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1', 'COSNT'], resolve='global')
 
 
@@ -225,14 +225,16 @@ def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillco
     """
     .
     """
-    total = df.shape[0]
-    
     df = pd.DataFrame({
         'category': ['empty', 'filled'],
         'value': [fill, 1-fill]
     })
 
-    rad = alt.Chart(df).mark_arc(innerRadius=dim/3).encode(
+    rad = alt.Chart(df).mark_arc(
+        innerRadius=dim/3
+    ).transform_calculate(
+
+    ).encode(
             theta='value',
             color=alt.Color('category:O', scale=alt.Scale(range=[f'{fillcolor}', 'lightgray']), legend=None),
         ).properties(
@@ -247,4 +249,4 @@ def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillco
         text=alt.value(text)
     )
 
-    return params_chart(rad + text_rad, filters)
+    return params_chart(rad, filters)
