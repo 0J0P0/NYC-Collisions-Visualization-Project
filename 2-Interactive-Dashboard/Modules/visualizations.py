@@ -208,12 +208,12 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
     """
 
     bars = alt.Chart(df).mark_bar().encode(
-        x=alt.X('VEHICLE TYPE CODE 1:N'),
-        y=alt.Y('count()'),
+        x=alt.X('VEHICLE TYPE CODE 1:N', axis=alt.Axis(labelAngle=0, labelFontSize=10), title='Vehicle Type'),
+        y=alt.Y('count():Q', title='Collisions'),
         color=alt.Color('VEHICLE TYPE CODE 1:N',
                         scale=alt.Scale(scheme=palette),
                         legend=None),
-        column=alt.Column('icon')
+        column=alt.Column('icon', title='Weather Conditions')
     ).properties(
             width=165
         )
