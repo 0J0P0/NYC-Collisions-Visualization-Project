@@ -215,7 +215,7 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
                         legend=None),
         column=alt.Column('icon')
     ).properties(
-            width=120
+            width=165
         )
 
     return params_chart(bars, filters)
