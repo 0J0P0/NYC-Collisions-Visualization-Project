@@ -5,9 +5,9 @@ import altair as alt
 
 click = alt.selection_point(fields=['BOROUGH'], toggle='true')
 
-months = alt.selection_multi(fields=['MONTH'], resolve='global')
-conditions = alt.selection_multi(fields=['icon'], resolve='global')
-vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1', 'COSNT'], resolve='global')
+months = alt.selection_multi(fields=['MONTH'])
+conditions = alt.selection_multi(fields=['icon'])
+vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
 
 
 def params_chart(c: alt.Chart, filters: list = None):
@@ -215,7 +215,8 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
                         legend=None),
         column=alt.Column('icon', title='Weather Conditions')
     ).properties(
-            width=165
+            width=165,
+            height=400
         )
 
     return params_chart(bars, filters)
@@ -250,3 +251,78 @@ def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillco
     )
 
     return params_chart(rad, filters)
+
+
+def bulltet_chart(df: pd.DataFrame, filters: list = None):
+    """
+    .
+    """
+
+    total = df.shape[0]
+    total_injured = df['TOTAL INJURED'].sum()
+    total_killed = df['TOTAL KILLED'].sum()
+
+    total_tick = alt.Chart().mark_tick(
+        thickness=2,
+        color='black'
+    ).transform_calculate(
+        total=str(total)
+    ).encode(
+        x=alt.X('total:Q', title='')
+    )
+
+    injured_tick = alt.Chart().mark_tick(
+        thickness=2,
+        color='black'
+    ).transform_calculate(
+        total=str(total_injured)
+    ).encode(
+        x=alt.X('total:Q', title='')
+    )
+
+    killed_tick = alt.Chart().mark_tick(
+        thickness=2,
+        color='black'
+    ).transform_calculate(
+        total=str(total_killed)
+    ).encode(
+        x=alt.X('total:Q', title='')
+    )
+
+
+    total_bar = alt.Chart(df).mark_bar(
+        size=20,
+        color='lightblue',
+        tooltip=True
+    ).encode(
+        x=alt.X('count():Q'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+    )
+
+    injured_bar = alt.Chart(df).mark_bar(
+        size=20,
+        color='lightblue',
+        tooltip=True
+    ).encode(
+        x=alt.X('sum(TOTAL INJURED):Q'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+    )
+
+    killed_bar = alt.Chart(df).mark_bar(
+        size=20,
+        color='lightblue',
+        tooltip=True
+    ).encode(
+        x=alt.X('sum(TOTAL KILLED):Q'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+    )
+
+    total_bar = params_chart(total_bar, filters)
+    injured_bar = params_chart(injured_bar, filters)
+    killed_bar = params_chart(killed_bar, filters)
+
+    c1 = alt.layer(total_tick, total_bar).properties(height=30, width=500, title='Total Collisions')
+    c2 = alt.layer(injured_tick, injured_bar).properties(height=30, width=500, title='Total Injured')
+    c3 = alt.layer(killed_tick, killed_tick).properties(height=30, width=500, title='Total Killed')
+
+    return c1 & c2 & c3
