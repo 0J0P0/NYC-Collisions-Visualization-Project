@@ -99,7 +99,7 @@ def heatmap_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None
         height=200
     )
 
-    base_hist = alt.Chart(df).mark_bar(opacity=0.6, binSpacing=0, color='purple')
+    base_hist = alt.Chart(df).mark_bar(opacity=0.6, binSpacing=0, color='purple', tooltip=True)
 
     ver_hist = base_hist.encode(
         x=alt.X('count():Q',
@@ -107,7 +107,8 @@ def heatmap_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None
         y=alt.Y('WEEKDAY:O',
                 # bin=alt.BinParams(maxbins=7),
                 sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-                axis=None)
+                axis=None),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('WEEKDAY:O', title='Day of the Week')]
     ).properties(
         width=100,
         height=200
@@ -118,7 +119,8 @@ def heatmap_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None
                 axis=alt.Axis(labels=False, ticks=False, title=None),
                 # bin=alt.Bin(maxbins=24)),
         ),
-        y=alt.Y('count():Q', title='Collisions')
+        y=alt.Y('count():Q', title='Collisions'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('HOUR:O', title='Hour of the Day')]
     ).properties(
         width=600,
         height=50
@@ -207,13 +209,16 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
     .
     """
 
-    bars = alt.Chart(df).mark_bar().encode(
+    bars = alt.Chart(df).mark_bar(
+        tooltip=True
+    ).encode(
         x=alt.X('VEHICLE TYPE CODE 1:N', axis=alt.Axis(labelAngle=0, labelFontSize=10), title='Vehicle Type'),
         y=alt.Y('count():Q', title='Collisions'),
         color=alt.Color('VEHICLE TYPE CODE 1:N',
                         scale=alt.Scale(scheme=palette),
                         legend=None),
-        column=alt.Column('icon', title='Weather Conditions')
+        column=alt.Column('icon', title='Weather Conditions'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
     ).properties(
             width=165,
             height=400
@@ -305,7 +310,7 @@ def bulltet_chart(df: pd.DataFrame, filters: list = None):
         tooltip=True
     ).encode(
         x=alt.X('sum(TOTAL INJURED):Q'),
-        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+        tooltip=[alt.Tooltip('sum(TOTAL INJURED):Q', title='Injured')]
     )
 
     killed_bar = alt.Chart(df).mark_bar(
@@ -314,7 +319,7 @@ def bulltet_chart(df: pd.DataFrame, filters: list = None):
         tooltip=True
     ).encode(
         x=alt.X('sum(TOTAL KILLED):Q'),
-        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+        tooltip=[alt.Tooltip('sum(TOTAL KILLED):Q', title='Killed')]
     )
 
     total_bar = params_chart(total_bar, filters)
@@ -323,6 +328,6 @@ def bulltet_chart(df: pd.DataFrame, filters: list = None):
 
     c1 = alt.layer(total_tick, total_bar).properties(height=30, width=500, title='Total Collisions')
     c2 = alt.layer(injured_tick, injured_bar).properties(height=30, width=500, title='Total Injured')
-    c3 = alt.layer(killed_tick, killed_tick).properties(height=30, width=500, title='Total Killed')
+    c3 = alt.layer(killed_tick, killed_bar).properties(height=30, width=500, title='Total Killed')
 
     return c1 & c2 & c3
