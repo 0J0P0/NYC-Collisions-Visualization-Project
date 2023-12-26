@@ -10,7 +10,6 @@ __version__ = "1.0.0"
 import pandas as pd
 import altair as alt
 import streamlit as st
-import geopandas as gpd
 from Modules import final_visualization as vi
 
 
