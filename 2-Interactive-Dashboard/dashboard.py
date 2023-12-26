@@ -33,7 +33,7 @@ def app():
 
     # ----- LOAD DATA -----
     merged = load_data('merged.csv', 'Data/')
-    df = merged[['COLLISION_ID', 'LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'TOTAL INJURED', 'TOTAL KILLED', 'CRASH DATE', 'HOUR', 'MONTH', 'WEEKDAY', 'icon', 'temp']]
+    df = merged[['COLLISION_ID', 'LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'TOTAL INJURED', 'TOTAL KILLED', 'CRASH DATE', 'HOUR', 'MONTH', 'WEEKDAY', 'icon']]
 
     # ----- DATA DASHBOARD -----
 

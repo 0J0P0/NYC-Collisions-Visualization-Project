@@ -368,11 +368,12 @@ def day_line_chart(df: pd.DataFrame, filters: list = None):
     df['CRASH DATE'] = pd.to_datetime(df['CRASH DATE'])
     df['DAY'] = df['CRASH DATE'].dt.day
 
-    line = alt.Chart(df).mark_line(
+    line = alt.Chart(df).mark_area(
+        opacity=0.7,
         tooltip=True
     ).encode(
         x=alt.X('DAY:O', axis=alt.Axis(labelAngle=0), title='Day of the Month'),
-        y=alt.Y('count():Q'),
+        y=alt.Y('count():Q', scale=alt.Scale(zero=False), title='Collisions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions')]
     ).properties(
         width=750
@@ -487,30 +488,63 @@ def kpi_persons(df: pd.DataFrame, kpi_injured: str, kpi_killed: str, dim: int = 
     kpi = params_chart(kpi, filters)
     
     kpi_injured = kpi.transform_aggregate(
-        sum='sum(TOTAL INJURED)'
+        injured='sum(TOTAL INJURED)'
     ).encode(
         x=alt.value(dim/2),
         y=alt.value(dim/2),
         color=alt.value('black'),
-        text=alt.Text('sum:Q')
+        text=alt.Text('injured:Q')
     ).properties(
         width=dim,
         height=dim
     )
 
     kpi_killed = kpi.transform_aggregate(
-        sum='sum(TOTAL KILLED)'
+        killed='sum(TOTAL KILLED)'
     ).encode(
         x=alt.value(dim/2),
         y=alt.value(dim/2),
         color=alt.value('black'),
-        text=alt.Text('sum:Q')
+        text=alt.Text('killed:Q')
     ).properties(
         width=dim,
         height=dim
     )
 
     return text_injured + kpi_injured, text_killed + kpi_killed
+
+
+def temp_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
+    """.
+    """
+
+    brush = alt.selection_interval(encodings=['x'])
+
+    base = alt.Chart(df).mark_line().encode(
+        x=alt.X('CRASH DATE:T',
+                title='Day of the Month'),
+        y=alt.Y('tempmax:Q',
+                title='Max - Min Temperature'),
+        y2=alt.Y2('tempmin:Q',
+                    title=''),
+        color=alt.Color('icon:N',
+                        scale=alt.Scale(scheme=palette))
+    )
+
+    temp = base.transform_filter(
+        brush
+    ).properties(
+        width=1000,
+    )
+
+    temp_overview = base.add_params(
+        brush
+    ).properties(
+        width=1000,
+        height=50
+    )
+
+    return params_chart(temp & temp_overview, filters)
 
 
 def bulltet_chart(df: pd.DataFrame, filters: list = None):
