@@ -8,6 +8,7 @@ click = alt.selection_point(fields=['BOROUGH'], toggle='true')
 months = alt.selection_multi(fields=['MONTH'])
 conditions = alt.selection_multi(fields=['icon'])
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
+weekdays = alt.selection_multi(fields=['WEEKDAY'])
 
 
 def params_chart(c: alt.Chart, filters: list = None):
@@ -23,13 +24,15 @@ def params_chart(c: alt.Chart, filters: list = None):
         c = c.transform_filter(conditions)
     if 'vehicles' in filters:
         c = c.transform_filter(vehicles)
+    if 'weekdays' in filters:
+        c = c.transform_filter(weekdays)
     if 'click' in filters:
         c = c.transform_filter(click)
 
     return c
 
 
-def legend_chart(df: pd.DataFrame, palette: str = 'category20'):
+def legend_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
     """
     .
     """
@@ -45,7 +48,7 @@ def legend_chart(df: pd.DataFrame, palette: str = 'category20'):
     ).add_params(
         months
     ).properties(
-        width=430
+        # width=430
     )
 
     condition_legend = alt.Chart(df).mark_rect().encode(
@@ -58,7 +61,7 @@ def legend_chart(df: pd.DataFrame, palette: str = 'category20'):
     ).add_params(
         conditions
     ).properties(
-        width=430
+        # width=430
     )
 
     vehicle_legend = alt.Chart(df).mark_rect().encode(
@@ -71,10 +74,27 @@ def legend_chart(df: pd.DataFrame, palette: str = 'category20'):
     ).add_params(
         vehicles
     ).properties(
-        width=430
+        # width=430
     )
 
-    legends = alt.hconcat(month_legend, condition_legend, vehicle_legend)
+    weekdays_legend = alt.Chart(df).mark_rect().encode(
+        x = alt.X('WEEKDAY:N',
+                title='Day of the Week',
+                sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                axis=alt.Axis(labelAngle=0)),
+        color = alt.condition(weekdays,
+                                alt.Color('WEEKDAY:N', scale=alt.Scale(scheme=palette), legend=None),
+                                alt.ColorValue('lightgray'))
+    ).add_params(
+        weekdays
+    ).properties(
+        # width=430
+    )
+
+    if filters is not None and 'weekdays' in filters:
+        legends = alt.hconcat(month_legend, condition_legend, vehicle_legend, weekdays_legend)
+    else:
+        legends = alt.hconcat(month_legend, condition_legend, vehicle_legend)
 
     return legends
 
@@ -220,11 +240,50 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
         column=alt.Column('icon', title='Weather Conditions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
     ).properties(
-            width=165,
-            height=400
-        )
+            width=165
+    )
 
     return params_chart(bars, filters)
+
+
+def hour_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
+    """
+    .
+    """
+
+    line = alt.Chart(df).mark_line(
+        tooltip=True
+    ).encode(
+        x=alt.X('HOUR:O', axis=alt.Axis(labelAngle=0), title='Hour of the Day'),
+        y=alt.Y('count():Q', title='Collisions'),
+        color=alt.Color('BOROUGH:N', scale=alt.Scale(scheme=palette)),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('BOROUGH:N', title='Borough')]
+    ).properties(
+        
+    )
+
+    return params_chart(line, filters)
+
+
+def day_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
+    """
+    .
+    """
+    
+    df['CRASH DATE'] = pd.to_datetime(df['CRASH DATE'])
+    df['DAY'] = df['CRASH DATE'].dt.day
+
+    line = alt.Chart(df).mark_line(
+        tooltip=True
+    ).encode(
+        x=alt.X('DAY:O', axis=alt.Axis(labelAngle=0), title='Day of the Month'),
+        y=alt.Y('count():Q'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+    ).properties(
+        width=750
+    )
+
+    return params_chart(line, filters)
 
 
 def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillcolor: str = 'lightblue', filters: list = None):
@@ -256,6 +315,102 @@ def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillco
     )
 
     return params_chart(rad, filters)
+
+
+def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200, filters: list = None):
+    """
+    .
+    """
+
+    text = alt.Chart().mark_text(
+        size=dim/6
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2 - 0.25*dim),
+        color=alt.value('black'),
+        text=alt.value(kpi_text)
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    kpi = alt.Chart(df).mark_text(size=dim/5)
+
+    kpi = params_chart(kpi, filters)
+    
+    kpi = kpi.transform_aggregate(
+        count='count()'
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2),
+        color=alt.value('black'),
+        text=alt.Text('count:Q')
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    return text + kpi
+
+
+def kpi_persons(df: pd.DataFrame, kpi_injured: str, kpi_killed: str, dim: int = 200, filters: list = None):
+    """
+    .
+    """
+
+    text_injured = alt.Chart().mark_text(
+        size=dim/6
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2 - 0.25*dim),
+        color=alt.value('black'),
+        text=alt.value(kpi_injured)
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    text_killed = alt.Chart().mark_text(
+        size=dim/6
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2 - 0.25*dim),
+        color=alt.value('black'),
+        text=alt.value(kpi_killed)
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    kpi = alt.Chart(df).mark_text(size=dim/5)
+
+    kpi = params_chart(kpi, filters)
+    
+    kpi_injured = kpi.transform_aggregate(
+        sum='sum(TOTAL INJURED)'
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2),
+        color=alt.value('black'),
+        text=alt.Text('sum:Q')
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    kpi_killed = kpi.transform_aggregate(
+        sum='sum(TOTAL KILLED)'
+    ).encode(
+        x=alt.value(dim/2),
+        y=alt.value(dim/2),
+        color=alt.value('black'),
+        text=alt.Text('sum:Q')
+    ).properties(
+        width=dim,
+        height=dim
+    )
+
+    return text_injured + kpi_injured, text_killed + kpi_killed
 
 
 def bulltet_chart(df: pd.DataFrame, filters: list = None):
