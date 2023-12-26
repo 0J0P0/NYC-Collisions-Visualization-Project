@@ -13,8 +13,21 @@ weekdays = alt.selection_multi(fields=['WEEKDAY'])
 
 def params_chart(c: alt.Chart, filters: list = None):
     """
-    .
+    Applies the filters to the chart.
+
+    Parameters
+    ----------
+    c : altair.Chart
+        Chart to be filtered.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Filtered chart.
     """
+
     if filters is None:
         return c
 
@@ -34,7 +47,21 @@ def params_chart(c: alt.Chart, filters: list = None):
 
 def legend_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
     """
-    .
+    Creates multiple interactive legends for the dashboard.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    palette : str
+        Color palette to be used in the legends.
+    filters : list
+        List of filters to be applied to the legends.
+
+    Returns
+    -------
+    altair.Chart
+        Multiple interactive legends for the dashboard.
     """
 
     month_legend = alt.Chart(df).mark_rect().encode(
@@ -162,7 +189,21 @@ def heatmap_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None
 
 def dotmap_chart(df: pd.DataFrame, map, filters: list = None):
     """
-    .
+    Creates a dotmap chart with one dot per collision.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    map : altair.topo_feature
+        Map to be used in the chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Dotmap chart with one dot per collision.
     """
 
     nyc = alt.Chart(map).mark_geoshape(
@@ -205,7 +246,21 @@ def dotmap_chart(df: pd.DataFrame, map, filters: list = None):
 
 def scatter_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None):
     """
-    .
+    Creates a scatter chart with the total number of collisions per hour of the day and temperature.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    palette : str
+        Color palette to be used in the chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Scatter chart with the total number of collisions per hour of the day and temperature.
     """
 
     temp = alt.Chart(df).mark_point(
@@ -226,7 +281,21 @@ def scatter_chart(df: pd.DataFrame, palette: str = 'blues', filters: list = None
 
 def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
     """
-    .
+    Creates a bar chart with the total number of collisions per vehicle type and weather conditions.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    palette : str
+        Color palette to be used in the chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Bar chart with the total number of collisions per vehicle type and weather conditions.
     """
 
     bars = alt.Chart(df).mark_bar(
@@ -248,7 +317,21 @@ def bar_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = Non
 
 def hour_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
     """
-    .
+    Creates a line chart with the total number of collisions per hour of the day.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    palette : str
+        Color palette to be used in the chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Line chart with the total number of collisions per hour of the day.
     """
 
     line = alt.Chart(df).mark_line(
@@ -265,9 +348,21 @@ def hour_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list
     return params_chart(line, filters)
 
 
-def day_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list = None):
+def day_line_chart(df: pd.DataFrame, filters: list = None):
     """
-    .
+    Creates a line chart with the total number of collisions per day of the month.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        Line chart with the total number of collisions per day of the month.
     """
     
     df['CRASH DATE'] = pd.to_datetime(df['CRASH DATE'])
@@ -286,40 +381,25 @@ def day_line_chart(df: pd.DataFrame, palette: str = 'category20', filters: list 
     return params_chart(line, filters)
 
 
-def kpi_chart(df: pd.DataFrame, text: str, fill: int = 0, dim: int = 200, fillcolor: str = 'lightblue', filters: list = None):
-    """
-    .
-    """
-    df = pd.DataFrame({
-        'category': ['empty', 'filled'],
-        'value': [fill, 1-fill]
-    })
-
-    rad = alt.Chart(df).mark_arc(
-        innerRadius=dim/3
-    ).transform_calculate(
-
-    ).encode(
-            theta='value',
-            color=alt.Color('category:O', scale=alt.Scale(range=[f'{fillcolor}', 'lightgray']), legend=None),
-        ).properties(
-            width=dim,
-            height=dim
-        )
-
-    text_rad = rad.mark_text(size=dim/len(text)).encode(
-        x=alt.value(dim/2),
-        y=alt.value(dim/2),
-        color=alt.value('black'),
-        text=alt.value(text)
-    )
-
-    return params_chart(rad, filters)
-
-
 def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200, filters: list = None):
     """
-    .
+    Creates a KPI chart with the total number of collisions.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    kpi_text : str
+        Text to be displayed in the KPI chart.
+    dim : int
+        Dimension of the KPI chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        KPI chart with the total number of collisions.
     """
 
     text = alt.Chart().mark_text(
@@ -355,7 +435,27 @@ def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200, filters: lis
 
 def kpi_persons(df: pd.DataFrame, kpi_injured: str, kpi_killed: str, dim: int = 200, filters: list = None):
     """
-    .
+    Creates two KPI charts with the total number of injured and killed.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    kpi_injured : str
+        Text to be displayed in the KPI chart for the total number of injured.
+    kpi_killed : str
+        Text to be displayed in the KPI chart for the total number of killed.
+    dim : int
+        Dimension of the KPI chart.
+    filters : list
+        List of filters to be applied to the chart.
+
+    Returns
+    -------
+    altair.Chart
+        KPI chart with the total number of injured.
+    altair.Chart
+        KPI chart with the total number of killed.
     """
 
     text_injured = alt.Chart().mark_text(
@@ -415,7 +515,19 @@ def kpi_persons(df: pd.DataFrame, kpi_injured: str, kpi_killed: str, dim: int = 
 
 def bulltet_chart(df: pd.DataFrame, filters: list = None):
     """
-    .
+    Creates a bullet chart with the total number of collisions, injured and killed.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe with the data to be plotted.
+    filters : list
+        List of filters to be applied to the chart.
+    
+    Returns
+    -------
+    altair.Chart
+        Bullet chart.
     """
 
     total = df.shape[0]
@@ -448,7 +560,6 @@ def bulltet_chart(df: pd.DataFrame, filters: list = None):
     ).encode(
         x=alt.X('total:Q', title='')
     )
-
 
     total_bar = alt.Chart(df).mark_bar(
         size=20,
@@ -485,4 +596,4 @@ def bulltet_chart(df: pd.DataFrame, filters: list = None):
     c2 = alt.layer(injured_tick, injured_bar).properties(height=30, width=500, title='Total Injured')
     c3 = alt.layer(killed_tick, killed_bar).properties(height=30, width=500, title='Total Killed')
 
-    return c1 & c2 & c3
+    return (c1 & c2 & c3)
