@@ -7,8 +7,7 @@ months = alt.selection_multi(fields=['MONTH'])
 conditions = alt.selection_multi(fields=['icon'])
 weekdays = alt.selection_multi(fields=['WEEKDAY'])
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
-# dot_selection = alt.selection_point(fields=['INJURED/KILLED'], bind='legend')
-boroughs = alt.selection_point(fields=['BOROUGH'], bind='legend', toggle='true')
+boroughs = alt.selection_multi(fields=['BOROUGH'])
 
 
 def legend_chart(df: pd.DataFrame):
@@ -62,7 +61,7 @@ def legend_chart(df: pd.DataFrame):
                 title='Vehicle Type',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(vehicles,
-                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(scheme='category20'), legend=None),
+                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['AMBULANCE', 'FIRE', 'TAXI'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         vehicles
@@ -84,9 +83,22 @@ def legend_chart(df: pd.DataFrame):
         width=768
     )
 
-    legends = alt.vconcat(alt.hconcat(month_legend, condition_legend), alt.hconcat(vehicle_legend, weekdays_legend))
+    boroughs_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
+        x = alt.X('BOROUGH:N',
+                title='',
+                axis=alt.Axis(labelAngle=0, labelFontSize=10, orient='top')),
+        color = alt.condition(boroughs,
+                                alt.Color('BOROUGH:N', scale=alt.Scale(domain=['Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island'], range=['#393B79', '#D62728', '#7B4173', '#FFBB78', '#AEC7E8']), legend=None),
+                                alt.ColorValue('lightgray'))
+    ).add_params(
+        boroughs
+    ).properties(
+        width=500
+    )
 
-    return legends
+    legends = alt.vconcat(alt.hconcat(month_legend, condition_legend), alt.hconcat(vehicle_legend, weekdays_legend).resolve_scale(color='independent'))
+
+    return legends, boroughs_legend
 
 
 def dotmap_chart(df: pd.DataFrame):
@@ -121,7 +133,7 @@ def dotmap_chart(df: pd.DataFrame):
 
     df['INJURED/KILLED'] = df.apply(determine_injured_or_killed, axis=1)
 
-    df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'INJURED/KILLED']]
+    df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'INJURED/KILLED']]
 
 
     nyc = alt.Chart(zips).mark_geoshape(
@@ -147,9 +159,6 @@ def dotmap_chart(df: pd.DataFrame):
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
         color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'purple', 'blue']), legend=alt.Legend(title='', orient='top')),
-        # opacity=alt.condition(dot_selection, alt.value(0.7), alt.value(0))
-    # ).add_params(
-    #     dot_selection
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -169,7 +178,7 @@ def dotmap_chart(df: pd.DataFrame):
         boroughs
     )
 
-    return nyc + points
+    return (nyc + points)
 
 
 def bar_chart(df: pd.DataFrame):
@@ -200,7 +209,8 @@ def bar_chart(df: pd.DataFrame):
         column=alt.Column('icon', title='Weather Conditions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
     ).properties(
-        width=133
+        width=133,
+        height=370
     )
 
     bars = bars.transform_filter(
@@ -243,7 +253,7 @@ def hour_line_chart(df: pd.DataFrame):
     ).encode(
         x=alt.X('HOUR:O', axis=alt.Axis(labelAngle=0, grid=True), title='Hour of the Day'),
         y=alt.Y('count():Q', title='Collisions'),
-        color=alt.Color('BOROUGH:N', scale=alt.Scale(domain=['Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island'], range=['#393B79', '#D62728', '#7B4173', '#FFBB78', '#AEC7E8']), legend=alt.Legend(title='Borough', orient='bottom')),
+        color=alt.Color('BOROUGH:N', scale=alt.Scale(domain=['Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island'], range=['#393B79', '#D62728', '#7B4173', '#FFBB78', '#AEC7E8']), legend=None),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('BOROUGH:N', title='Borough')]
     )
 

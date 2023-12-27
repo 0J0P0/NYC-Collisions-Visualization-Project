@@ -50,9 +50,9 @@ def app():
     kpi1 = vi.kpi_collisions(df, 'Collisions Count')
     kpi2, kpi3 = vi.kpi_persons(df, 'Injured Sum', 'Killed Sum')
 
-    legends = vi.legend_chart(df)
+    legends, boroughs_legends = vi.legend_chart(df)
 
-    final = alt.vconcat(alt.vconcat(legends, alt.hconcat(alt.vconcat(dot_map, hour_line).resolve_scale(color='independent'), alt.vconcat(alt.hconcat(kpi1, kpi2, kpi3), alt.vconcat(day_line, bars).resolve_scale(color='independent')))))  
+    final = alt.vconcat(alt.vconcat(legends, alt.hconcat(alt.vconcat(dot_map, boroughs_legends, hour_line).resolve_scale(color='independent'), alt.vconcat(alt.hconcat(kpi1, kpi2, kpi3), alt.vconcat(day_line, bars).resolve_scale(color='independent')))))  
     
     st.altair_chart(final, use_container_width=True)
 
