@@ -47,8 +47,6 @@ def app():
 
     bars = vi.bar_chart(df)
 
-    # temp = vi.temp_chart(df)
-
     kpi1 = vi.kpi_collisions(df, 'Collisions Count')
     kpi2, kpi3 = vi.kpi_persons(df, 'Injured Sum', 'Killed Sum')
 

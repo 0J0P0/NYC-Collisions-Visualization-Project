@@ -2,12 +2,13 @@ import pandas as pd
 import altair as alt
 
 
-click = alt.selection_point(fields=['BOROUGH'], toggle='true')
 
 months = alt.selection_multi(fields=['MONTH'])
 conditions = alt.selection_multi(fields=['icon'])
-vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
 weekdays = alt.selection_multi(fields=['WEEKDAY'])
+vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
+# dot_selection = alt.selection_point(fields=['INJURED/KILLED'], bind='legend')
+boroughs = alt.selection_point(fields=['BOROUGH'], bind='legend', toggle='true')
 
 
 def legend_chart(df: pd.DataFrame):
@@ -122,6 +123,7 @@ def dotmap_chart(df: pd.DataFrame):
 
     df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'INJURED/KILLED']]
 
+
     nyc = alt.Chart(zips).mark_geoshape(
         stroke='white',
         strokeWidth=1,
@@ -129,10 +131,7 @@ def dotmap_chart(df: pd.DataFrame):
         tooltip=True
     ).encode(
         color=alt.ColorValue('#AEC7E8'),
-        opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
-        tooltip=[alt.Tooltip('BOROUGH:N'), alt.Tooltip('ZIP CODE:N')]
-    ).add_params(
-        click
+        tooltip=[alt.Tooltip('properties.borough:N', title='BOROUGH'), alt.Tooltip('.properties.postalCode:N', title='ZIP CODE')]
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -147,7 +146,10 @@ def dotmap_chart(df: pd.DataFrame):
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'purple', 'blue']), legend=alt.Legend(title='', orient='top'))
+        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'purple', 'blue']), legend=alt.Legend(title='', orient='top')),
+        # opacity=alt.condition(dot_selection, alt.value(0.7), alt.value(0))
+    # ).add_params(
+    #     dot_selection
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -164,7 +166,7 @@ def dotmap_chart(df: pd.DataFrame):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs
     )
 
     return nyc + points
@@ -210,7 +212,7 @@ def bar_chart(df: pd.DataFrame):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs
     )
 
     return bars
@@ -254,7 +256,9 @@ def hour_line_chart(df: pd.DataFrame):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs    
+    ).add_params(
+        boroughs
     )
 
     return line
@@ -299,14 +303,14 @@ def day_line_chart(df: pd.DataFrame):
         height=300
     )
 
-    # rule = base.mark_rule(
-    #     color='red'
-    # ).transform_aggregate(
-    #     count='count()',
-    #     groupby=['DAY']
-    # ).encode(
-    #     y='max(count):O'
-    # )
+    rule = base.mark_rule(
+        color='red'
+    ).transform_aggregate(
+        count='count()',
+        groupby=['DAY']
+    ).encode(
+        y='max(count):O'
+    )
 
     # line = line + rule
 
@@ -319,7 +323,7 @@ def day_line_chart(df: pd.DataFrame):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs
     )
 
     return line
@@ -359,7 +363,7 @@ def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs
     )
     
     kpi = kpi.transform_aggregate(
@@ -416,7 +420,7 @@ def kpi_persons(df: pd.DataFrame, injured: str, killed: str, dim: int = 200):
     ).transform_filter(
         weekdays
     ).transform_filter(
-        click
+        boroughs
     )
     
     kpi_injured = kpi.transform_aggregate(
