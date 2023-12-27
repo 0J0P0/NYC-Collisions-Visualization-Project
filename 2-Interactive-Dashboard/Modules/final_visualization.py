@@ -147,7 +147,7 @@ def dotmap_chart(df: pd.DataFrame):
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'yellow', 'blue']), legend=alt.Legend(title='', orient='top'))
+        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'purple', 'blue']), legend=alt.Legend(title='', orient='top'))
     ).project(
         type='identity', reflectY=True
     ).properties(
