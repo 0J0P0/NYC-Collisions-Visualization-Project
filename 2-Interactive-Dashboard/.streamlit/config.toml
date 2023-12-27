@@ -1,2 +1,7 @@
 [server]
 runOnSave = true
+
+[theme]
+backgroundColor = "#FFFFFF"
+textColor = "#000000"
+font = "monospace"

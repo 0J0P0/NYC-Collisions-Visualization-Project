@@ -26,7 +26,7 @@ def app():
     .
     """
 
-    st.set_page_config(page_title='Visualization Project', page_icon=':bar_chart:', layout='wide')
+    st.set_page_config(page_title='Visualization Project', page_icon=':bar_chart:', layout='centered')
     st.header('Vehicle Collisions Analysis in New York City')
     st.subheader('Data from summer months of 2018')
     st.write('Designed by Juan Pablo Zaldivar and Enric Millán')
@@ -47,14 +47,14 @@ def app():
 
     bars = vi.bar_chart(df)
 
-    temp = vi.temp_chart(df)
+    # temp = vi.temp_chart(df)
 
     kpi1 = vi.kpi_collisions(df, 'Collisions Count')
     kpi2, kpi3 = vi.kpi_persons(df, 'Injured Sum', 'Killed Sum')
 
     legends = vi.legend_chart(df)
 
-    final = alt.vconcat(alt.vconcat(legends, alt.hconcat(alt.vconcat(dot_map, hour_line).resolve_scale(color='independent'), alt.vconcat(alt.hconcat(kpi1, kpi2, kpi3), alt.vconcat(day_line, bars).resolve_scale(color='independent')))), temp).resolve_scale(color='independent')
+    final = alt.vconcat(alt.vconcat(legends, alt.hconcat(alt.vconcat(dot_map, hour_line).resolve_scale(color='independent'), alt.vconcat(alt.hconcat(kpi1, kpi2, kpi3), alt.vconcat(day_line, bars).resolve_scale(color='independent')))))  
     
     st.altair_chart(final, use_container_width=True)
 

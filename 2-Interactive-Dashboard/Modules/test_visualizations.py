@@ -219,6 +219,8 @@ def dotmap_chart(df: pd.DataFrame, filters: list = None):
 
     zips = gpd.read_file('Data/new-york-city-zipcodes-ny_.geojson')
     zips = zips.rename(columns={'borough': 'BOROUGH', 'postalCode': 'ZIP CODE'})
+
+    df['INJURED/KILLED'] = df.apply(lambda x: 'killed' if x['TOTAL KILLED'] > 0 else ('injured' if x['TOTAL INJURED'] > 0 else 'none'), axis=1)
     
     nyc = alt.Chart(zips).mark_geoshape(
         stroke='white',
@@ -244,7 +246,8 @@ def dotmap_chart(df: pd.DataFrame, filters: list = None):
         tooltip=False
     ).encode(
         longitude='LONGITUDE:Q',
-        latitude='LATITUDE:Q'
+        latitude='LATITUDE:Q',
+        color=alt.Color('INJURED/KILLED:N')
     ).project(
         type='identity', reflectY=True
     ).properties(
