@@ -2,6 +2,6 @@
 runOnSave = true
 
 [theme]
-backgroundColor = "#FFFFFF"
+backgroundColor = "#EDF3FA"
 textColor = "#000000"
 font = "monospace"

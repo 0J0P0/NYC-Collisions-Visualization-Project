@@ -35,12 +35,12 @@ def legend_chart(df: pd.DataFrame):
                 sort=['June', 'July', 'August', 'September'],
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(months,
-                              alt.Color('MONTH:N', legend=None),
+                              alt.Color('MONTH:N', scale=alt.Scale(scheme='category20'), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         months
     ).properties(
-        width=250
+        width=584
     )
 
     condition_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
@@ -48,12 +48,12 @@ def legend_chart(df: pd.DataFrame):
                 title='Weather Conditions',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(conditions,
-                              alt.Color('icon:N', legend=None),
+                              alt.Color('icon:N', scale=alt.Scale(scheme='category20'), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         conditions
     ).properties(
-        width=250
+        width=584
     )
 
     vehicle_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
@@ -61,12 +61,12 @@ def legend_chart(df: pd.DataFrame):
                 title='Vehicle Type',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(vehicles,
-                              alt.Color('VEHICLE TYPE CODE 1:N', legend=None),
+                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(scheme='category20'), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         vehicles
     ).properties(
-        width=150
+        width=400
     )
 
     weekdays_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
@@ -75,15 +75,15 @@ def legend_chart(df: pd.DataFrame):
                 sort=['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(weekdays,
-                                alt.Color('WEEKDAY:N', legend=None),
+                                alt.Color('WEEKDAY:N', scale=alt.Scale(scheme='category20'), legend=None),
                                 alt.ColorValue('lightgray'))
     ).add_params(
         weekdays
     ).properties(
-        width=400
+        width=768
     )
 
-    legends = alt.hconcat(month_legend, condition_legend, vehicle_legend, weekdays_legend)
+    legends = alt.vconcat(alt.hconcat(month_legend, condition_legend), alt.hconcat(vehicle_legend, weekdays_legend))
 
     return legends
 
@@ -110,7 +110,15 @@ def dotmap_chart(df: pd.DataFrame):
     map_url = 'https://raw.githubusercontent.com/0J0P0/NYC-Collisions-Visualization-Project/main/2-Interactive-Dashboard/Data/new-york-city-zipcodes-ny_.geojson'
     zips = alt.Data(url=map_url, format=alt.DataFormat(property="features"))
     
-    df['INJURED/KILLED'] = df.apply(lambda x: 'killed' if x['TOTAL KILLED'] > 0 else ('injured' if x['TOTAL INJURED'] > 0 else 'none'), axis=1)
+    def determine_injured_or_killed(row):
+        if row['TOTAL KILLED'] > 0:
+            return 'Killed'
+        elif row['TOTAL INJURED'] > 0:
+            return 'Injured'
+        else:
+            return 'None'
+
+    df['INJURED/KILLED'] = df.apply(determine_injured_or_killed, axis=1)
 
     df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'INJURED/KILLED']]
 
@@ -120,7 +128,7 @@ def dotmap_chart(df: pd.DataFrame):
         filled=True,
         tooltip=True
     ).encode(
-        color=alt.ColorValue('lightblue'),
+        color=alt.ColorValue('#AEC7E8'),
         opacity=alt.condition(click, alt.value(1), alt.value(0.2)),
         tooltip=[alt.Tooltip('BOROUGH:N'), alt.Tooltip('ZIP CODE:N')]
     ).add_params(
@@ -139,7 +147,7 @@ def dotmap_chart(df: pd.DataFrame):
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['none', 'injured', 'killed'], range=['green', 'yellow', 'red'])),
+        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'yellow', 'blue']), legend=alt.Legend(title='', orient='top'))
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -186,10 +194,11 @@ def bar_chart(df: pd.DataFrame):
     ).encode(
         x=alt.X('VEHICLE TYPE CODE 1:N', axis=alt.Axis(labelAngle=0, labelFontSize=10), title='Vehicle Type'),
         y=alt.Y('count():Q', title='Collisions'),
-        color=alt.Color('VEHICLE TYPE CODE 1:N',
-                        legend=None),
+        color=alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['AMBULANCE', 'FIRE', 'TAXI'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
         column=alt.Column('icon', title='Weather Conditions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
+    ).properties(
+        width=133
     )
 
     bars = bars.transform_filter(
@@ -227,11 +236,12 @@ def hour_line_chart(df: pd.DataFrame):
     df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'HOUR', 'MONTH', 'WEEKDAY', 'icon']] 
 
     line = alt.Chart(df).mark_line(
+        point=True,
         tooltip=True
     ).encode(
-        x=alt.X('HOUR:O', axis=alt.Axis(labelAngle=0), title='Hour of the Day'),
+        x=alt.X('HOUR:O', axis=alt.Axis(labelAngle=0, grid=True), title='Hour of the Day'),
         y=alt.Y('count():Q', title='Collisions'),
-        color=alt.Color('BOROUGH:N'),
+        color=alt.Color('BOROUGH:N', scale=alt.Scale(domain=['Bronx', 'Brooklyn', 'Manhattan', 'Queens', 'Staten Island'], range=['#393B79', '#D62728', '#7B4173', '#FFBB78', '#AEC7E8']), legend=alt.Legend(title='Borough', orient='bottom')),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('BOROUGH:N', title='Borough')]
     )
 
@@ -273,16 +283,32 @@ def day_line_chart(df: pd.DataFrame):
 
     df_copy = df_copy[['BOROUGH', 'VEHICLE TYPE CODE 1', 'DAY', 'MONTH', 'WEEKDAY', 'icon']]
 
-    line = alt.Chart(df_copy).mark_area(
+    base = alt.Chart(df_copy)
+
+    line = base.mark_area(
         opacity=0.7,
+        interpolate='monotone',
         tooltip=True
     ).encode(
         x=alt.X('DAY:O', axis=alt.Axis(labelAngle=0, grid=True), title='Day of the Month'),
         y=alt.Y('count():Q', scale=alt.Scale(zero=False), title='Collisions'),
-        tooltip=[alt.Tooltip('count():Q', title='Collisions')]
+        color=alt.value('purple'),
+        tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('DAY:O', title='Day of the Month')]
     ).properties(
+        width=600,
         height=300
     )
+
+    # rule = base.mark_rule(
+    #     color='red'
+    # ).transform_aggregate(
+    #     count='count()',
+    #     groupby=['DAY']
+    # ).encode(
+    #     y='max(count):O'
+    # )
+
+    # line = line + rule
 
     line = line.transform_filter(
         months
@@ -420,49 +446,4 @@ def kpi_persons(df: pd.DataFrame, injured: str, killed: str, dim: int = 200):
     )
 
     return (kpi_injured), (kpi_killed)
-
-
-def temp_chart(df: pd.DataFrame):
-    """
-    Creates a line chart with the maximum and minimum temperature.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Dataframe with the data to be plotted.
-    filters : list
-        List of filters to be applied to the chart.
-
-    Returns
-    -------
-    altair.Chart
-        Line chart with the maximum and minimum temperature.
-    """
-
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'CRASH DATE', 'tempmax', 'tempmin']]
-
-    brush = alt.selection_interval(encodings=['x'])
-
-    base = alt.Chart(df).mark_line().encode(
-        x=alt.X('CRASH DATE:T',
-                title='Day of the Month'),
-        y=alt.Y('tempmax:Q',
-                title='Max - Min Temperature'),
-        y2=alt.Y2('tempmin:Q',
-                    title=''),
-        color=alt.Color('icon:N')
-    )
-
-    temp = base.transform_filter(
-        brush
-    ).properties(
-    )
-
-    temp_overview = base.add_params(
-        brush
-    ).properties(
-        height=50
-    )
-
-    return params_chart(temp & temp_overview, filters)
 
