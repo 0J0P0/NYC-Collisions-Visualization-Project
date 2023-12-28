@@ -7,7 +7,7 @@ import geopandas as gpd
 click = alt.selection_point(fields=['BOROUGH'], toggle='true')
 
 months = alt.selection_multi(fields=['MONTH'])
-conditions = alt.selection_multi(fields=['icon'])
+conditions = alt.selection_multi(fields=['ICON'])
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
 weekdays = alt.selection_multi(fields=['WEEKDAY'])
 
@@ -79,11 +79,11 @@ def legend_chart(df: pd.DataFrame, filters: list = None):
     )
 
     condition_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
-        x = alt.X('icon:N',
+        x = alt.X('ICON:N',
                 title='Weather Conditions',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(conditions,
-                              alt.Color('icon:N', legend=None),
+                              alt.Color('ICON:N', legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         conditions
@@ -316,7 +316,7 @@ def bar_chart(df: pd.DataFrame, filters: list = None):
         y=alt.Y('count():Q', title='Collisions'),
         color=alt.Color('VEHICLE TYPE CODE 1:N',
                         legend=None),
-        column=alt.Column('icon', title='Weather Conditions'),
+        column=alt.Column('ICON', title='Weather Conditions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
     ).properties(
     )
@@ -545,7 +545,7 @@ def temp_chart(df: pd.DataFrame, filters: list = None):
                 title='Max - Min Temperature'),
         y2=alt.Y2('tempmin:Q',
                     title=''),
-        color=alt.Color('icon:N')
+        color=alt.Color('ICON:N')
     )
 
     temp = base.transform_filter(

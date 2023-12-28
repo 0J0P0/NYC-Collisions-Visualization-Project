@@ -35,7 +35,7 @@ def app():
 
     # ----- LOAD DATA -----
     merged = load_data('merged.csv', 'Data/')
-    df = merged[['COLLISION_ID', 'LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'TOTAL INJURED', 'TOTAL KILLED', 'CRASH DATE', 'HOUR', 'MONTH', 'WEEKDAY', 'icon']]
+    df = merged[['COLLISION_ID', 'LONGITUDE', 'LATITUDE', 'BOROUGH', 'ZIP CODE', 'VEHICLE TYPE CODE 1', 'TOTAL INJURED', 'TOTAL KILLED', 'CRASH DATE', 'HOUR', 'MONTH', 'WEEKDAY', 'ICON']]
 
 
     # ----- DATA DASHBOARD -----
@@ -47,8 +47,8 @@ def app():
 
     bars = vi.bar_chart(df)
 
-    kpi1 = vi.kpi_collisions(df, 'Collisions Count')
-    kpi2, kpi3 = vi.kpi_persons(df, 'Injured Sum', 'Killed Sum')
+    kpi1 = vi.kpi_collisions(df,)
+    kpi2, kpi3 = vi.kpi_persons(df)
 
     legends, boroughs_legends = vi.legend_chart(df)
 

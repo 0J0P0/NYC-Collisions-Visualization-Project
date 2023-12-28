@@ -4,7 +4,7 @@ import altair as alt
 
 
 months = alt.selection_multi(fields=['MONTH'])
-conditions = alt.selection_multi(fields=['icon'])
+conditions = alt.selection_multi(fields=['ICON'])
 weekdays = alt.selection_multi(fields=['WEEKDAY'])
 vehicles = alt.selection_multi(fields=['VEHICLE TYPE CODE 1'])
 boroughs = alt.selection_multi(fields=['BOROUGH'])
@@ -27,7 +27,7 @@ def legend_chart(df: pd.DataFrame):
         Multiple interactive legends for the dashboard.
     """
 
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon']]
+    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'ICON']]
 
     month_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
         x = alt.X('MONTH:N',
@@ -44,11 +44,11 @@ def legend_chart(df: pd.DataFrame):
     )
 
     condition_legend = alt.Chart(df).mark_rect(tooltip=False).encode(
-        x = alt.X('icon:N',
+        x = alt.X('ICON:N',
                 title='Weather Conditions',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(conditions,
-                              alt.Color('icon:N', scale=alt.Scale(scheme='category20'), legend=None),
+                              alt.Color('ICON:N', scale=alt.Scale(scheme='category20'), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         conditions
@@ -61,7 +61,7 @@ def legend_chart(df: pd.DataFrame):
                 title='Vehicle Type',
                 axis=alt.Axis(labelAngle=0, labelFontSize=10)),
         color = alt.condition(vehicles,
-                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['AMBULANCE', 'FIRE', 'TAXI'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
+                              alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['Ambulance', 'Fire', 'Taxi'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
                               alt.ColorValue('lightgray'))
     ).add_params(
         vehicles
@@ -133,7 +133,7 @@ def dotmap_chart(df: pd.DataFrame):
 
     df['INJURED/KILLED'] = df.apply(determine_injured_or_killed, axis=1)
 
-    df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'INJURED/KILLED']]
+    df = df[['LONGITUDE', 'LATITUDE', 'BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'ICON', 'INJURED/KILLED']]
 
 
     nyc = alt.Chart(zips).mark_geoshape(
@@ -153,12 +153,16 @@ def dotmap_chart(df: pd.DataFrame):
 
     points = alt.Chart(df).mark_circle(
         size=10,
-        opacity=0.7,
+        opacity=0.5,
         tooltip=False
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Injured', 'Killed', 'None'], range=['green', 'purple', 'blue']), legend=alt.Legend(title='', orient='top')),
+        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Killed', 'Injured', 'None'], range=['purple', 'green', 'blue']), legend=alt.Legend(title='', orient='top')),
+        # opacity 0.5 if its not Killed
+        # opacity=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(1), alt.value(0.5)),
+        # size=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(20), alt.value(10)),
+        # shape=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value('cross'), alt.value('circle')),
     ).project(
         type='identity', reflectY=True
     ).properties(
@@ -198,15 +202,15 @@ def bar_chart(df: pd.DataFrame):
         Bar chart with the total number of collisions per vehicle type and weather conditions.
     """
 
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon']]
+    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'ICON']]
 
     bars = alt.Chart(df).mark_bar(
         tooltip=True
     ).encode(
         x=alt.X('VEHICLE TYPE CODE 1:N', axis=alt.Axis(labelAngle=0, labelFontSize=10), title='Vehicle Type'),
         y=alt.Y('count():Q', title='Collisions'),
-        color=alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['AMBULANCE', 'FIRE', 'TAXI'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
-        column=alt.Column('icon', title='Weather Conditions'),
+        color=alt.Color('VEHICLE TYPE CODE 1:N', scale=alt.Scale(domain=['Ambulance', 'Fire', 'Taxi'], range=['#9C9EDE', '#F7B6D2', '#AEC7E8']), legend=None),
+        column=alt.Column('ICON', title='Weather Conditions'),
         tooltip=[alt.Tooltip('count():Q', title='Collisions'), alt.Tooltip('VEHICLE TYPE CODE 1:N', title='Vehicle Type')]
     ).properties(
         width=133,
@@ -245,7 +249,7 @@ def hour_line_chart(df: pd.DataFrame):
         Line chart with the total number of collisions per hour of the day.
     """
 
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'HOUR', 'MONTH', 'WEEKDAY', 'icon']] 
+    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'HOUR', 'MONTH', 'WEEKDAY', 'ICON']] 
 
     line = alt.Chart(df).mark_line(
         point=True,
@@ -295,7 +299,7 @@ def day_line_chart(df: pd.DataFrame):
     df_copy['CRASH DATE'] = pd.to_datetime(df_copy['CRASH DATE'])
     df_copy['DAY'] = df_copy['CRASH DATE'].dt.day
 
-    df_copy = df_copy[['BOROUGH', 'VEHICLE TYPE CODE 1', 'DAY', 'MONTH', 'WEEKDAY', 'icon']]
+    df_copy = df_copy[['BOROUGH', 'VEHICLE TYPE CODE 1', 'DAY', 'MONTH', 'WEEKDAY', 'ICON']]
 
     base = alt.Chart(df_copy)
 
@@ -339,7 +343,7 @@ def day_line_chart(df: pd.DataFrame):
     return line
 
 
-def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200):
+def kpi_collisions(df: pd.DataFrame, dim: int = 200):
     """
     Creates a KPI chart with the total number of collisions.
 
@@ -360,7 +364,7 @@ def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200):
         KPI chart with the total number of collisions.
     """
 
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon']]
+    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'ICON']]
 
     kpi = alt.Chart(df).mark_text(size=dim/5)
 
@@ -392,7 +396,7 @@ def kpi_collisions(df: pd.DataFrame, kpi_text: str, dim: int = 200):
     return kpi
 
 
-def kpi_persons(df: pd.DataFrame, injured: str, killed: str, dim: int = 200):
+def kpi_persons(df: pd.DataFrame, dim: int = 200):
     """
     Creates two KPI charts with the total number of injured and killed.
 
@@ -417,7 +421,7 @@ def kpi_persons(df: pd.DataFrame, injured: str, killed: str, dim: int = 200):
         KPI chart with the total number of killed.
     """
 
-    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'icon', 'TOTAL INJURED', 'TOTAL KILLED']]
+    df = df[['BOROUGH', 'VEHICLE TYPE CODE 1', 'MONTH', 'WEEKDAY', 'ICON', 'TOTAL INJURED', 'TOTAL KILLED']]
 
     kpi = alt.Chart(df).mark_text(size=dim/5)
 

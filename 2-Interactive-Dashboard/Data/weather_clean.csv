@@ -1,4 +1,4 @@
-datetime,temp,icon,tempmin,tempmax
+datetime,temp,ICON,tempmin,tempmax
 2018-06-01,21.6,Rainy,17.9,26.7
 2018-06-02,25.1,Rainy,20.7,30.6
 2018-06-03,17.0,Rainy,12.8,21.7
