@@ -151,18 +151,16 @@ def dotmap_chart(df: pd.DataFrame):
         height=500
     )
 
-    points = alt.Chart(df).mark_circle(
-        size=10,
-        opacity=0.5,
+    points = alt.Chart(df).mark_point(
+        filled=True,
         tooltip=False
     ).encode(
         longitude='LONGITUDE:Q',
         latitude='LATITUDE:Q',
-        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Killed', 'Injured', 'None'], range=['purple', 'green', 'blue']), legend=alt.Legend(title='', orient='top')),
-        # opacity 0.5 if its not Killed
-        # opacity=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(1), alt.value(0.5)),
-        # size=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(20), alt.value(10)),
-        # shape=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value('cross'), alt.value('circle')),
+        color=alt.Color('INJURED/KILLED:N', scale=alt.Scale(domain=['Killed', 'Injured', 'None'], range=['purple', 'green', 'blue']), legend=alt.Legend(title='Casualties', orient='top')),
+        opacity=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(1), alt.value(0.3)),
+        size=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value(50), alt.value(10)),
+        shape=alt.condition(alt.datum['INJURED/KILLED'] == 'Killed', alt.value('triangle'), alt.value('circle')),
     ).project(
         type='identity', reflectY=True
     ).properties(
