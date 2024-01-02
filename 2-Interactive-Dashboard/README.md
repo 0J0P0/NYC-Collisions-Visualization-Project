@@ -1,4 +1,4 @@
-# Second Visualization Project
+# Second Project Statement
 
 ## 1 Introduction
 
